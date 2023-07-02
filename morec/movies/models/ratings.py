@@ -10,15 +10,6 @@ class RatingMovie(RatingAbstract):
         on_delete=models.CASCADE,
         related_name='ratings',
     )
-    is_viewed = models.BooleanField(
-        verbose_name='Просматривался', default=False
-    )
-    must_see = models.BooleanField(
-        verbose_name='Нужно посмотреть', default=False
-    )
-    is_favorite = models.BooleanField(
-        verbose_name='В избранном', default=False
-    )
 
     class Meta(RatingAbstract.Meta):
         verbose_name = 'Оценка фильма'

@@ -59,6 +59,16 @@ class Movie(models.Model):
         on_delete=models.PROTECT,
         related_name='movies',
     )
+    favorite_for = models.ManyToManyField(
+        'User',
+        verbose_name='Избранное у пользователей',
+        related_name='favorite_movies',
+    )
+    need_to_see = models.ManyToManyField(
+        'User',
+        verbose_name='В списке просмотра у пользователей',
+        related_name='need_see_movies',
+    )
 
     class Meta:
         ordering = ('rate_imdb', 'title')
