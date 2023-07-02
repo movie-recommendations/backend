@@ -26,6 +26,13 @@ class Movie(models.Model):
     duration_minutes = models.PositiveSmallIntegerField(
         verbose_name='Продолжительность',
     )
+    age_limit = models.PositiveSmallIntegerField(
+        verbose_name='Возрастное ограничение',
+        validators=(
+            MinValueValidator(0),
+            MaxValueValidator(30),
+        ),
+    )
     genres = models.ManyToManyField(
         'Genre',
         verbose_name='Жанры',
