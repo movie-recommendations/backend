@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-dotenv_file = BASE_DIR.joinpath('.env.example')
+dotenv_file = BASE_DIR.joinpath('.env')
 
 if dotenv_file.is_file():
     load_dotenv(dotenv_file)
@@ -33,8 +33,8 @@ INSTALLED_APPS = [
 
 PROJECT_APPS = [
     'api',
-    #'users',
-    #'movies',
+    'users',
+    'movies',
 ]
 
 
