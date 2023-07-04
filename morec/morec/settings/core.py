@@ -15,7 +15,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True if os.environ.get('DEBUG') == 'True' else False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_yasg'
 ]
 
 PROJECT_APPS = [
@@ -35,6 +36,7 @@ PROJECT_APPS = [
     'users',
     'movies',
 ]
+
 
 INSTALLED_APPS += PROJECT_APPS
 
