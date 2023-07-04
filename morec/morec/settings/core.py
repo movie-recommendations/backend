@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-dotenv_file = BASE_DIR.joinpath('.env')
+dotenv_file = BASE_DIR.joinpath('.env.example')
 
 if dotenv_file.is_file():
     load_dotenv(dotenv_file)
@@ -15,7 +15,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True if os.environ.get('DEBUG') == 'True' else False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -28,13 +28,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_yasg'
 ]
 
 PROJECT_APPS = [
     'api',
-    'users',
-    'movies',
+    #'users',
+    #'movies',
 ]
+
 
 INSTALLED_APPS += PROJECT_APPS
 
