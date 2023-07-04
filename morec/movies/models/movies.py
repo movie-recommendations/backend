@@ -1,5 +1,8 @@
+from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+
+User = get_user_model()
 
 
 class Movie(models.Model):
@@ -60,12 +63,12 @@ class Movie(models.Model):
         related_name='movies',
     )
     favorite_for = models.ManyToManyField(
-        'User',
+        User,
         verbose_name='Избранное у пользователей',
         related_name='favorite_movies',
     )
     need_to_see = models.ManyToManyField(
-        'User',
+        User,
         verbose_name='В списке просмотра у пользователей',
         related_name='need_see_movies',
     )
