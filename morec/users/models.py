@@ -1,5 +1,8 @@
+import uuid
+
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
+
 from .managers import UserManager
 
 
@@ -14,13 +17,14 @@ class Avatar(models.Model):
 
 class User(AbstractBaseUser):
     """Расширенная модель для пользователей."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(
         verbose_name='Почта',
         max_length=255,
         unique=True,
         help_text='Введите свой Email'
     )
-    username = models.SlugField(
+    username = models.CharField(
         verbose_name='Логин',
         max_length=10,
         null=True,
