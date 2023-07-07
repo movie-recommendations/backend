@@ -18,8 +18,12 @@ class Movie(models.Model):
         upload_to='images/movies/',
     )
     premiere_date = models.DateField(verbose_name='Дата премьеры')
-    rating_avg = models.FloatField(verbose_name='Средний рейтинг среди пользователей', default=0)
-    rate_imdb = models.FloatField(verbose_name='Рейтинг')
+    rating_avg = models.FloatField(
+        verbose_name='Средний рейтинг среди пользователей',
+        default=0,
+    )
+    rate_imdb = models.FloatField(verbose_name='Рейтинг Imdb', default=0)
+    rate_kinopoisk = models.FloatField(verbose_name='Рейтинг Imdb', default=0)
     duration_minutes = models.PositiveSmallIntegerField(
         verbose_name='Продолжительность',
     )

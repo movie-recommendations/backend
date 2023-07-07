@@ -54,8 +54,9 @@ class User(AbstractBaseUser):
     avatar = models.ForeignKey(
         Avatar,
         verbose_name='Аватарка',
-        on_delete=models.PROTECT,
-        related_name='avatars'
+        on_delete=models.SET_NULL,
+        related_name='avatars',
+        null=True,
     )
     city = models.CharField(
         verbose_name='Город',
@@ -78,10 +79,16 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
 
-    def __str__(self):
-        return self.email
-
     class Meta:
         ordering = ['-pk']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+    def __str__(self):
+        return self.email
+
+    def has_module_perms(self, app_label):
+        return self.is_active and self.is_staff
+
+    def has_perm(self, perm):
+        return self.is_active and self.is_staff
