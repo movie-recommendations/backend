@@ -19,6 +19,16 @@ class Compilation(models.Model):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='compilations'
     )
+    favorite = models.ManyToManyField(
+        User,
+        verbose_name='Избранные подборки',
+        related_name='favorite_compilations',
+        blank=True,
+    )
+    from_redaction = models.BooleanField(
+        verbose_name='От редакции',
+        default=False,
+    )
 
     class Meta:
         ordering = ('title',)
