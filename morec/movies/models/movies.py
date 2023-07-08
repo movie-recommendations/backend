@@ -18,14 +18,15 @@ class Movie(models.Model):
         upload_to='images/movies/',
     )
     premiere_date = models.DateField(verbose_name='Дата премьеры')
-    year = models.PositiveSmallIntegerField(
-        verbose_name='Год выхода',
-        validators=(
-            MinValueValidator(1),
-            MaxValueValidator(9999),
-        ),
+    rating_avg = models.FloatField(
+        verbose_name='Средний рейтинг среди пользователей',
+        default=0,
     )
-    rate_imdb = models.FloatField(verbose_name='Рейтинг')
+    rate_imdb = models.FloatField(verbose_name='Рейтинг Imdb', default=0)
+    rate_kinopoisk = models.FloatField(
+        verbose_name='Рейтинг кинопоиск',
+        default=0,
+    )
     duration_minutes = models.PositiveSmallIntegerField(
         verbose_name='Продолжительность',
     )
@@ -35,6 +36,10 @@ class Movie(models.Model):
             MinValueValidator(0),
             MaxValueValidator(30),
         ),
+    )
+    view_count = models.PositiveIntegerField(
+        verbose_name='Количество получения карточки',
+        default=0,
     )
     genres = models.ManyToManyField(
         'Genre',
@@ -80,4 +85,4 @@ class Movie(models.Model):
         db_table = 'movies'
 
     def __str__(self):
-        return f'{self.title} - {self.year}'
+        return f'{self.title} - {self.premiere_date.year}'
