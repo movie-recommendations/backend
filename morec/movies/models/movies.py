@@ -23,7 +23,10 @@ class Movie(models.Model):
         default=0,
     )
     rate_imdb = models.FloatField(verbose_name='Рейтинг Imdb', default=0)
-    rate_kinopoisk = models.FloatField(verbose_name='Рейтинг Imdb', default=0)
+    rate_kinopoisk = models.FloatField(
+        verbose_name='Рейтинг кинопоиск',
+        default=0,
+    )
     duration_minutes = models.PositiveSmallIntegerField(
         verbose_name='Продолжительность',
     )

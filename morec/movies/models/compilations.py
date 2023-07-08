@@ -25,7 +25,10 @@ class Compilation(models.Model):
         related_name='favorite_compilations',
         blank=True,
     )
-    from_redaction = models.BooleanField(verbose_name='От редакции', default=False)
+    from_redaction = models.BooleanField(
+        verbose_name='От редакции',
+        default=False,
+    )
 
     class Meta:
         ordering = ('title',)
