@@ -15,6 +15,12 @@ class Avatar(models.Model):
         verbose_name_plural = 'Аватарки'
 
 
+SEX_CHOICES = [
+    (0, 'Male'),
+    (1, 'Female')
+]
+
+
 class User(AbstractBaseUser):
     """Расширенная модель для пользователей."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -71,6 +77,13 @@ class User(AbstractBaseUser):
         null=True,
         blank=True,
         help_text='Введите свою страну'
+    )
+    sex = models.IntegerField(
+        verbose_name='Пол',
+        blank=True,
+        null=True,
+        choices=SEX_CHOICES,
+        help_text='Выберите пол'
     )
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
