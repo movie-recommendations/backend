@@ -26,7 +26,7 @@ class ComplilationRedactorionListViewSet(mixins.ListModelMixin,
 class ComplilationFavoriteListViewSet(mixins.ListModelMixin,
                                       viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CompilationSerializer
+    serializer_class = CompilationShortSerializer
 
     def get_queryset(self):
         User = self.request.user
