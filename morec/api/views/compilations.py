@@ -1,10 +1,14 @@
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.permissions import (AllowAny,
-                                        IsAuthenticated)
-from api.serializers.compilations import (CompilationDetailSerializer,
-                                          CompilationListSerializer)
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated
+)
+from api.serializers.compilations import (
+    CompilationDetailSerializer,
+    CompilationListSerializer
+)
 from movies.models.compilations import Compilation
 
 
