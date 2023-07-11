@@ -1,21 +1,25 @@
-from rest_framework import viewsets, generics, mixins
+from rest_framework.generics import RetrieveAPIView
+from rest_framework.mixins import ListModelMixin
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import (AllowAny,
                                         IsAuthenticated)
-from api.serializers.compilations import (CompilationSerializer,
-                                          CompilationShortSerializer)
+from api.serializers.compilations import (CompilationDetailSerializer,
+                                          CompilationListSerializer)
 from movies.models.compilations import Compilation
 
 
-class CompliationSoloViewSet(generics.RetrieveAPIView):
+class CompliationSoloViewSet(RetrieveAPIView):
     permission_classes = (AllowAny,)
     queryset = Compilation.objects.all()
-    serializer_class = CompilationSerializer
+    serializer_class = CompilationDetailSerializer
 
 
-class ComplilationRedactorionListViewSet(mixins.ListModelMixin,
-                                         viewsets.GenericViewSet):
+class ComplilationRedactorionListViewSet(
+    ListModelMixin,
+    GenericViewSet
+):
     permission_classes = (AllowAny,)
-    serializer_class = CompilationShortSerializer
+    serializer_class = CompilationListSerializer
 
     def get_queryset(self):
         new_queryset = Compilation.objects.filter(
@@ -23,10 +27,12 @@ class ComplilationRedactorionListViewSet(mixins.ListModelMixin,
         return new_queryset
 
 
-class ComplilationFavoriteListViewSet(mixins.ListModelMixin,
-                                      viewsets.GenericViewSet):
+class ComplilationFavoriteListViewSet(
+    ListModelMixin,
+    GenericViewSet
+):
     permission_classes = (IsAuthenticated,)
-    serializer_class = CompilationShortSerializer
+    serializer_class = CompilationListSerializer
 
     def get_queryset(self):
         User = self.request.user
