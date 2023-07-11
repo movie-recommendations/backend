@@ -159,7 +159,3 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 
 .idea/
-/images
-/morec/images
-morec/movies/models/migrations/
-morec/users/models/migrations/
