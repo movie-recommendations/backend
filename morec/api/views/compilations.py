@@ -1,4 +1,4 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, mixins
 from rest_framework.permissions import (AllowAny,
                                         IsAuthenticated)
 from api.serializers.compilations import (CompilationSerializer,
@@ -12,22 +12,19 @@ class CompliationSoloViewSet(generics.RetrieveAPIView):
     serializer_class = CompilationSerializer
 
 
-class ComplilationRedactorionListViewSet(viewsets.ModelViewSet):
+class ComplilationRedactorionListViewSet(mixins.ListModelMixin,
+                                         viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
-    serializer_class = CompilationSerializer
+    serializer_class = CompilationShortSerializer
 
     def get_queryset(self):
         new_queryset = Compilation.objects.filter(
             from_redaction=True).order_by('-date_created')
         return new_queryset
 
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return CompilationShortSerializer
-        return CompilationSerializer
 
-
-class ComplilationFavoriteListViewSet(viewsets.ModelViewSet):
+class ComplilationFavoriteListViewSet(mixins.ListModelMixin,
+                                      viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = CompilationSerializer
 
@@ -37,8 +34,3 @@ class ComplilationFavoriteListViewSet(viewsets.ModelViewSet):
             '-date_created'
         )
         return new_queryset
-
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return CompilationShortSerializer
-        return CompilationSerializer

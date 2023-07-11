@@ -161,3 +161,5 @@ cython_debug/
 .idea/
 /images
 /morec/images
+morec/movies/models/migrations/
+morec/users/models/migrations/
