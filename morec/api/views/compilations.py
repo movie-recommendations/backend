@@ -1,7 +1,8 @@
 from rest_framework import viewsets, generics
 from rest_framework.permissions import (AllowAny,
                                         IsAuthenticated)
-from api.serializers.compilations import CompilationSerializer
+from api.serializers.compilations import (CompilationSerializer,
+                                          CompilationShortSerializer)
 from movies.models.compilations import Compilation
 
 
@@ -20,6 +21,11 @@ class ComplilationRedactorionListViewSet(viewsets.ModelViewSet):
             from_redaction=True).order_by('-date_created')
         return new_queryset
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CompilationShortSerializer
+        return CompilationSerializer
+
 
 class ComplilationFavoriteListViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)
@@ -31,3 +37,8 @@ class ComplilationFavoriteListViewSet(viewsets.ModelViewSet):
             '-date_created'
         )
         return new_queryset
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CompilationShortSerializer
+        return CompilationSerializer

@@ -8,4 +8,10 @@ class CompilationSerializer(serializers.ModelSerializer):
         model = Compilation
         fields = ('id', 'title', 'picture',
                   'movies', 'author',
-                  'from_redaction')
+                  )
+
+
+class CompilationShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Compilation
+        fields = ('id', 'title', 'movies')
