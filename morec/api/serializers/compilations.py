@@ -10,7 +10,8 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class MoviesInComplilationsListSerializer(serializers.ModelSerializer):
-    genres = GenreSerializer(many=True)
+    year = serializers.SerializerMethodField()
+    genres = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Movie
@@ -18,10 +19,17 @@ class MoviesInComplilationsListSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'picture',
+            'year',
             'rate_imdb',
             'rate_kinopoisk',
             'genres',
         )
+
+    def get_year(self, obj):
+        return obj.premiere_date.year
+
+    def get_genres(self, obj):
+        return obj.genres.title
 
 
 class CompilationDetailSerializer(serializers.ModelSerializer):

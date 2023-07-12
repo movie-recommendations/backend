@@ -39,8 +39,8 @@ class ComplilationFavoriteListViewSet(
     serializer_class = CompilationListSerializer
 
     def get_queryset(self):
-        User = self.request.user
-        new_queryset = User.favorite_compilations.all().order_by(
+        user = self.request.user
+        new_queryset = user.favorite_compilations.all().order_by(
             '-date_created'
         )
         return new_queryset
