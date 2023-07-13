@@ -64,20 +64,6 @@ class User(AbstractBaseUser):
         related_name='avatars',
         null=True,
     )
-    city = models.CharField(
-        verbose_name='Город',
-        max_length=150,
-        null=True,
-        blank=True,
-        help_text='Введите свой город'
-    )
-    country = models.CharField(
-        verbose_name='Страна',
-        max_length=150,
-        null=True,
-        blank=True,
-        help_text='Введите свою страну'
-    )
     sex = models.IntegerField(
         verbose_name='Пол',
         blank=True,
