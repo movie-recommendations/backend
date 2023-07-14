@@ -1,16 +1,19 @@
-from rest_framework import status
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
-from rest_framework.viewsets import GenericViewSet
-from rest_framework.filters import OrderingFilter
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
-
-from api.serializers.movies import MoviesListSerializer, MoviesDetailSerializer, MovieRateSerializer
-from movies.models import Movie, RatingMovie
-from api.filters import MoviesFilter
 from datetime import datetime
+
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
+
+from api.filters import MoviesFilter
+from api.serializers.movies import (MovieRateSerializer,
+                                    MoviesDetailSerializer,
+                                    MoviesListSerializer)
+from movies.models import Movie, RatingMovie
 
 
 class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):

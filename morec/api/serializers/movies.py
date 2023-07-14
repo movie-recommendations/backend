@@ -1,21 +1,21 @@
 from rest_framework import serializers
 
-from movies.models import Movie, Genre, Country, Category, RatingMovie
+from movies.models import Category, Country, Genre, Movie, RatingMovie
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class GenreInMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ('id', 'title', 'slug')
 
 
-class CountrySerializer(serializers.ModelSerializer):
+class CountryInMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
         fields = ('id', 'title', 'slug')
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategoryInMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'title', 'slug')
@@ -49,9 +49,9 @@ class MoviesListSerializer(serializers.ModelSerializer):
 
 
 class MoviesDetailSerializer(serializers.ModelSerializer):
-    genres = GenreSerializer(many=True)
-    countries = CountrySerializer(many=True)
-    categories = CategorySerializer()
+    genres = GenreInMovieSerializer(many=True)
+    countries = CountryInMovieSerializer(many=True)
+    categories = CategoryInMovieSerializer()
     actors = serializers.StringRelatedField(many=True)
     directors = serializers.StringRelatedField(many=True)
 
