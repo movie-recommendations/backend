@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from movies.models import Movie, Genre, Country, Category
+from movies.models import Movie, Genre, Country, Category, RatingMovie
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -75,3 +75,9 @@ class MoviesDetailSerializer(serializers.ModelSerializer):
             'categories',
             'description',
         )
+
+
+class MovieRateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RatingMovie
+        fields = ('rate',)
