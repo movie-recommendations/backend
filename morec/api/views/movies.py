@@ -1,6 +1,8 @@
 from datetime import datetime
 
+from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
+from query_counter.decorators import queries_counter
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
@@ -16,8 +18,9 @@ from api.serializers.movies import (MovieRateSerializer,
 from movies.models import Movie, RatingMovie
 
 
+@method_decorator(queries_counter, name='dispatch')
 class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
-    queryset = Movie.objects
+    queryset = Movie.objects.prefetch_related('genres', 'ratings', 'countries', 'favorite_for')
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = MoviesFilter
     ordering_fields = ('view_count', 'rate_kinopoisk')
