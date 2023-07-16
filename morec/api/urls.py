@@ -11,7 +11,7 @@ from .views.users import user_verify_email
 v1_router = DefaultRouter()
 v1_router.register('movies', MoviesViewSet)
 v1_router.register('categories', CategoryViewSet)
-v1_router.register('gangres', GenreViewSet)
+v1_router.register('ganres', GenreViewSet)
 v1_router.register('countries', CountryViewSet)
 
 
@@ -19,6 +19,6 @@ urlpatterns = [
     path('users/verify-email/', user_verify_email),
     path('docs/', include(docs_urlpatterns)),
     path('v1/', include(v1_router.urls)),
-    path('auth/', include('djoser.urls')),
+    path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
 ]

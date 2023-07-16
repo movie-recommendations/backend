@@ -12,44 +12,37 @@ class UserVerifyEmailSerializer(serializers.ModelSerializer):
         fields = ('email', 'password')
 
 
-class UserGenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genre
-        fields = ('id',)
-
-
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор для регистрации пользователей"""
 
-    fav_genres = UserGenreSerializer(many=True, required=False)
+    fav_genres = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects,
+        required=False,
+        many=True,
+    )
 
     class Meta:
         model = User
         fields = ('id', 'email', 'password', 'fav_genres')
 
+    def validate(self, attrs):
+        genres = attrs.pop('fav_genres', None)
+        attrs = super().validate(attrs)
+        attrs['fav_genres'] = genres
+        return attrs
+
     def create(self, validated_data):
-        if 'fav_genres' not in self.initial_data:
-            return User.objects.create(**validated_data)
-        print('qwer1234')
-        fav_genres = validated_data.pop('fav_genres')
-        print(fav_genres)
-        user = User.objects.create(**validated_data)
-        for fav_genre in fav_genres:
-            user.fav_genres.add(*fav_genres)
+        genres = validated_data.pop('fav_genres', None)
+        user = User.objects.create_user(**validated_data)
+        if genres is not None:
+            user.fav_genres.add(*genres)
         return user
 
 
 class CustomUserSerializer(UserSerializer):
-    """Сериализатор для просмотра пользователей"""
-    fav_genres = serializers.SerializerMethodField(read_only=True)
+    """Сериализатор для пользователя"""
 
     class Meta:
         model = User
-        fields = ('username', 'id', 'email', 'first_name',
-                  'last_name', 'fav_genres')
-
-    def get_is_fav_genres(self, obj):
-        request = self.context.get('request')
-        return request.user.is_authenticated and Genre.objects.filter(
-            user=request.user, fav_genres=obj
-        ).exists()
+        fields = ('username', 'id', 'email', 'date_of_birth', 'sex')

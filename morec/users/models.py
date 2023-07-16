@@ -63,6 +63,7 @@ class User(AbstractBaseUser):
         on_delete=models.SET_NULL,
         related_name='avatars',
         null=True,
+        blank=True,
     )
     sex = models.IntegerField(
         verbose_name='Пол',
