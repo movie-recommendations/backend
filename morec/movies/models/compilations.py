@@ -29,6 +29,7 @@ class Compilation(models.Model):
         verbose_name='От редакции',
         default=False,
     )
+    date_created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ('title',)
