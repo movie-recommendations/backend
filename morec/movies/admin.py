@@ -1,10 +1,7 @@
 from django.contrib import admin
 
-from .models import (
-    Movie, Genre, Actor,
-    Director, Country, Compilation,
-    Category,
-)
+from .models import (Actor, Category, Compilation, Country, Director, Genre,
+                     Movie)
 
 
 @admin.register(Compilation)

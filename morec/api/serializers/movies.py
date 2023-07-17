@@ -1,21 +1,21 @@
 from rest_framework import serializers
 
-from movies.models import Movie, Genre, Country, Category
+from movies.models import Category, Country, Genre, Movie, RatingMovie
 
 
-class GenreSerializer(serializers.ModelSerializer):
+class GenreInMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = ('id', 'title', 'slug')
 
 
-class CountrySerializer(serializers.ModelSerializer):
+class CountryInMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
         fields = ('id', 'title', 'slug')
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CategoryInMovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ('id', 'title', 'slug')
@@ -26,6 +26,7 @@ class MoviesListSerializer(serializers.ModelSerializer):
     genres = serializers.StringRelatedField(many=True)
     countries = serializers.StringRelatedField(many=True)
     rating_count = serializers.SerializerMethodField()
+    is_favorite = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
@@ -39,6 +40,7 @@ class MoviesListSerializer(serializers.ModelSerializer):
             'age_limit',
             'genres',
             'countries',
+            'is_favorite',
         )
 
     def get_year(self, obj):
@@ -47,13 +49,20 @@ class MoviesListSerializer(serializers.ModelSerializer):
     def get_rating_count(self, obj):
         return obj.ratings.count()
 
+    def get_is_favorite(self, obj):
+        user = self.context['request'].user
+        return user in obj.favorite_for.all() if user else False
+
 
 class MoviesDetailSerializer(serializers.ModelSerializer):
-    genres = GenreSerializer(many=True)
-    countries = CountrySerializer(many=True)
-    categories = CategorySerializer()
+    genres = GenreInMovieSerializer(many=True)
+    countries = CountryInMovieSerializer(many=True)
+    categories = CategoryInMovieSerializer()
     actors = serializers.StringRelatedField(many=True)
     directors = serializers.StringRelatedField(many=True)
+    is_favorite = serializers.SerializerMethodField()
+    is_rated = serializers.SerializerMethodField()
+    is_need_see = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
@@ -74,4 +83,25 @@ class MoviesDetailSerializer(serializers.ModelSerializer):
             'countries',
             'categories',
             'description',
+            'is_favorite',
+            'is_rated',
+            'is_need_see',
         )
+
+    def get_is_favorite(self, obj):
+        user = self.context['request'].user
+        return user in obj.favorite_for.all() if user else False
+
+    def get_is_rated(self, obj):
+        user = self.context['request'].user
+        return user in obj.ratings.all() if user else False
+
+    def get_is_need_see(self, obj):
+        user = self.context['request'].user
+        return user in obj.need_to_see.all() if user else False
+
+
+class MovieRateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RatingMovie
+        fields = ('rate',)
