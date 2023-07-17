@@ -11,6 +11,7 @@ from .views.compilations import (
     ComplilationRedactorionListViewSet,
     ComplilationFavoriteListViewSet
 )
+from .views.users import user_verify_email
 
 v1_router = DefaultRouter()
 v1_router.register('movies', MoviesViewSet)
@@ -29,6 +30,7 @@ v1_router.register(
 )
 
 urlpatterns = [
+    path('users/verify-email/', user_verify_email),
     path('docs/', include(docs_urlpatterns)),
     path('v1/', include(v1_router.urls)),
 
@@ -37,4 +39,7 @@ urlpatterns = [
         CompliationSoloViewSet.as_view(),
         name="complilation"
     ),
+    path('', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
+
 ]
