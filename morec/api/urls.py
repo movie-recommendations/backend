@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .docs import urlpatterns as docs_urlpatterns
@@ -11,7 +11,6 @@ from .views.compilations import (
     ComplilationRedactorionListViewSet,
     ComplilationFavoriteListViewSet
 )
-
 
 v1_router = DefaultRouter()
 v1_router.register('movies', MoviesViewSet)
