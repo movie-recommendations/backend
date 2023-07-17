@@ -9,7 +9,7 @@ class UserVerifyEmailSerializer(serializers.ModelSerializer):
     """Сериализатор для проверки почты в db"""
     class Meta:
         model = User
-        fields = ('email', 'password')
+        fields = ('email',)
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
