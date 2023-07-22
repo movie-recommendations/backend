@@ -12,7 +12,7 @@ class CompilationAdmin(admin.ModelAdmin):
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
     list_display = ('title', 'age_limit', 'categories', 'premiere_date')
-    exclude = ('favorite_for', 'need_to_see', 'rate_imdb')
+    exclude = ('favorite_for', 'need_to_see', 'view_count', 'rating_avg')
 
 
 @admin.register(Actor)

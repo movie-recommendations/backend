@@ -18,7 +18,7 @@ class MoviesInComplilationsListSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'title',
-            'picture',
+            'v_picture',
             'year',
             'rate_imdb',
             'rate_kinopoisk',
