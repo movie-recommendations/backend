@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema, no_body
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
@@ -32,13 +33,12 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         'favorites': MoviesListSerializer,
         'watchlist': MoviesListSerializer,
         'recomendations': MoviesListSerializer,
-        'favorite': None,
-        'setwatch': None,
     }
 
     def get_serializer_class(self):
         return self.actions_serializer.get(self.action, MoviesListSerializer)
 
+    @swagger_auto_schema(responses={404: 'Not found'})
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.view_count += 1
@@ -68,6 +68,10 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         queryset = self.get_queryset().filter(favorite_for=user)
         return Response(self.get_serializer(queryset, many=True).data)
 
+    @swagger_auto_schema(method='delete', responses={404: 'Not found'})
+    @swagger_auto_schema(
+        method='post', request_body=no_body, responses={404: 'Not found'}
+    )
     @action(
         detail=True,
         methods=('post', 'delete'),
@@ -92,6 +96,10 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         queryset = self.get_queryset().filter(need_to_see=user)
         return Response(self.get_serializer(queryset, many=True).data)
 
+    @swagger_auto_schema(method='delete', responses={404: 'Not found'})
+    @swagger_auto_schema(
+        method='post', request_body=no_body, responses={404: 'Not found'}
+    )
     @action(
         detail=True,
         methods=('post', 'delete'),
