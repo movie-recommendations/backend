@@ -119,3 +119,7 @@ class MovieRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RatingMovie
         fields = ('rate',)
+
+
+class Dumpy(serializers.Serializer):
+    pass

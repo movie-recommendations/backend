@@ -12,7 +12,8 @@ from rest_framework.viewsets import GenericViewSet
 from api.filters import MoviesFilter
 from api.serializers.movies import (MovieRateSerializer,
                                     MoviesDetailSerializer,
-                                    MoviesListSerializer)
+                                    MoviesListSerializer,
+                                    Dumpy)
 from movies.models import Movie, RatingMovie
 
 
@@ -27,7 +28,13 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         'list': MoviesListSerializer,
         'retrieve': MoviesDetailSerializer,
         'newest': MoviesListSerializer,
+        'rated': MoviesListSerializer,
         'rate': MovieRateSerializer,
+        'favorites': MoviesListSerializer,
+        'watchlist': MoviesListSerializer,
+        'recomendations': MoviesListSerializer,
+        'favorite': Dumpy,
+        'setwatch': Dumpy,
     }
 
     def get_serializer_class(self):
@@ -53,6 +60,16 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         return Response(serializer.data)
 
     @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def favorites(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(favorite_for=user)
+        return Response(self.get_serializer(queryset, many=True).data)
+
+    @action(
         detail=True,
         methods=('post', 'delete'),
         permission_classes=(IsAuthenticated,),
@@ -67,6 +84,16 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         return Response(status=200)
 
     @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def watchlist(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(need_to_see=user)
+        return Response(self.get_serializer(queryset, many=True).data)
+
+    @action(
         detail=True,
         methods=('post', 'delete'),
         permission_classes=(IsAuthenticated,),
@@ -79,6 +106,16 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         else:
             movie.need_to_see.remove(user)
         return Response(status=200)
+
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def rated(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(ratings__user=user)
+        return Response(self.get_serializer(queryset, many=True).data)
 
     @action(
         detail=True,
@@ -123,3 +160,13 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
             {'error': 'Рейтинг уже оставлен ранее'},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def recomendations(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(genres__in=user.fav_genres.all())
+        return Response(self.get_serializer(queryset, many=True).data)
