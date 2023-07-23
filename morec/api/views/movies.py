@@ -12,8 +12,7 @@ from rest_framework.viewsets import GenericViewSet
 from api.filters import MoviesFilter
 from api.serializers.movies import (MovieRateSerializer,
                                     MoviesDetailSerializer,
-                                    MoviesListSerializer,
-                                    Dumpy)
+                                    MoviesListSerializer,)
 from movies.models import Movie, RatingMovie
 
 
@@ -33,8 +32,8 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         'favorites': MoviesListSerializer,
         'watchlist': MoviesListSerializer,
         'recomendations': MoviesListSerializer,
-        'favorite': Dumpy,
-        'setwatch': Dumpy,
+        'favorite': None,
+        'setwatch': None,
     }
 
     def get_serializer_class(self):
