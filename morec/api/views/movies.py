@@ -13,7 +13,8 @@ from rest_framework.viewsets import GenericViewSet
 from api.filters import MoviesFilter
 from api.serializers.movies import (MovieRateSerializer,
                                     MoviesDetailSerializer,
-                                    MoviesListSerializer,)
+                                    MoviesListSerializer,
+                                    MoviesOfDaySerializer,)
 from movies.models import Movie, RatingMovie
 
 
@@ -33,6 +34,7 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         'favorites': MoviesListSerializer,
         'watchlist': MoviesListSerializer,
         'recomendations': MoviesListSerializer,
+        'movies_of_the_day': MoviesOfDaySerializer,
     }
 
     def get_serializer_class(self):
@@ -68,9 +70,16 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         queryset = self.get_queryset().filter(favorite_for=user)
         return Response(self.get_serializer(queryset, many=True).data)
 
-    @swagger_auto_schema(method='delete', responses={404: 'Not found'})
     @swagger_auto_schema(
-        method='post', request_body=no_body, responses={404: 'Not found'}
+        method='delete',
+        responses={404: 'Not found'},
+        operation_description='Удаление из избранных.',
+    )
+    @swagger_auto_schema(
+        method='post',
+        request_body=no_body,
+        responses={404: 'Not found', 200: 'OK'},
+        operation_description='Добавление в изранные.',
     )
     @action(
         detail=True,
@@ -96,9 +105,16 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         queryset = self.get_queryset().filter(need_to_see=user)
         return Response(self.get_serializer(queryset, many=True).data)
 
-    @swagger_auto_schema(method='delete', responses={404: 'Not found'})
     @swagger_auto_schema(
-        method='post', request_body=no_body, responses={404: 'Not found'}
+        method='delete',
+        responses={404: 'Not found'},
+        operation_description='Удаление из списка просмотра',
+    )
+    @swagger_auto_schema(
+        method='post',
+        request_body=no_body,
+        responses={404: 'Not found', 200: 'OK'},
+        operation_description='Добавление в список просмотра',
     )
     @action(
         detail=True,
@@ -124,6 +140,21 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         queryset = self.get_queryset().filter(ratings__user=user)
         return Response(self.get_serializer(queryset, many=True).data)
 
+    @swagger_auto_schema(
+        method='delete',
+        responses={404: 'Not found'},
+        operation_description='Удаление оценки фильма.',
+    )
+    @swagger_auto_schema(
+        method='put',
+        responses={404: 'Not found', 200: 'OK'},
+        operation_description='Изменение оценки фильма.',
+    )
+    @swagger_auto_schema(
+        method='post',
+        responses={404: 'Not found', 201: 'Created'},
+        operation_description='Оценка фильма.',
+    )
     @action(
         detail=True,
         methods=('post', 'put', 'delete'),
@@ -176,4 +207,9 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     def recomendations(self, request):
         user = request.user
         queryset = self.get_queryset().filter(genres__in=user.fav_genres.all())
+        return Response(self.get_serializer(queryset, many=True).data)
+
+    @action(detail=False, filter_backends=())
+    def movies_of_the_day(self, request):
+        queryset = self.get_queryset().order_by('view_count')[:5]
         return Response(self.get_serializer(queryset, many=True).data)

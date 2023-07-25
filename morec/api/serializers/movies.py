@@ -119,3 +119,28 @@ class MovieRateSerializer(serializers.ModelSerializer):
     class Meta:
         model = RatingMovie
         fields = ('rate',)
+
+
+class MoviesOfDaySerializer(serializers.ModelSerializer):
+    is_favorite = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Movie
+        fields = (
+            'id',
+            'title',
+            'short_description',
+            'h_picture',
+            'rate_imdb',
+            'rate_kinopoisk',
+            'is_favorite',
+        )
+
+    def get_is_favorite(self, obj):
+        user = self.context['request'].user
+        return user in obj.favorite_for.all() if user else False
+
+    def get_short_description(self, obj):
+        pos = obj.description.find(' ', 50)
+        return obj.description if pos == -1 else obj.description[:pos]
