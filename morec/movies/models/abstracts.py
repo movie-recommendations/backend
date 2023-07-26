@@ -18,12 +18,14 @@ class SlugTitleAbstract(models.Model):
 
 
 class PersonAbstract(models.Model):
-    name = models.CharField(verbose_name='Имя Фамилия', max_length=200)
+    name = models.CharField(verbose_name='Имя', max_length=100)
+    last_name = models.CharField(verbose_name='Фамилие', max_length=100)
     picture = models.ImageField(
         verbose_name='Фото',
         upload_to='images/persons/',
+        blank=True,
+        null=True,
     )
-    biography = models.TextField(verbose_name='Информация', blank=True)
     favorite = models.ManyToManyField(
         User,
         verbose_name='В избранном',
@@ -32,7 +34,7 @@ class PersonAbstract(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ('name',)
+        ordering = ('name', 'last_name')
 
     def __str__(self):
         return self.name
