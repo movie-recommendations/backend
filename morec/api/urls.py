@@ -13,7 +13,7 @@ from .views.genres import GenreViewSet
 from .views.movies import MoviesViewSet
 from .views.users import (user_verify_email, favorite_genres,
                           user_registration, user_create_activate, login,
-                          refresh)
+                          UsersMe, UpdatePassword)
 
 v1_router = DefaultRouter()
 v1_router.register('movies', MoviesViewSet)
@@ -36,7 +36,8 @@ urlpatterns = [
     path('v1/auth/user-registration/', user_registration),
     path('v1/auth/activation/<token>/', user_create_activate),
     path('v1/auth/login/', login),
-    path('v1/auth/refresh/', refresh),
+    path('v1/auth/reset-password/', UpdatePassword.as_view()),
+    path('v1/users-me/', UsersMe.as_view()),
     path('v1/users/favorite-genres/', favorite_genres),
     path('docs/', include(docs_urlpatterns)),
     path('v1/', include(v1_router.urls)),

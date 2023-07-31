@@ -2,15 +2,17 @@ import datetime
 
 import jwt
 from django.core.mail import send_mail
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.serializers.users import (UserVerifyEmailSerializer,
                                    FavoriteGenresSerializer,
                                    CustomUserCreateSerializer, LoginSerializer,
-                                   RefreshSerializer)
+                                   CustomUserSerializer,
+                                   ChangePasswordSerializer)
 from morec.settings import (SECRET_KEY, HOST, EMAIL_HOST_USER,
                             JWT_REGISTRATION_TTL)
 from users.models import User
@@ -46,7 +48,7 @@ def user_registration(request):
 @api_view(['GET'])
 def user_create_activate(request, token):
     try:
-        data = jwt.decode(token, SECRET_KEY, algorithm="HS256")
+        data = jwt.decode(token, SECRET_KEY, algorithms="HS256")
         serializer = CustomUserCreateSerializer(data=data)
         if serializer.is_valid():
             validated_data = serializer.data
@@ -62,6 +64,36 @@ def user_create_activate(request, token):
         )
 
 
+@api_view(['POST'])
+def login(request):
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid():
+        response_data = serializer.save()
+        return Response(response_data, status=status.HTTP_201_CREATED)
+    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UpdatePassword(UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UsersMe(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def favorite_genres(request):
@@ -74,21 +106,3 @@ def favorite_genres(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     serializer = FavoriteGenresSerializer(user)
     return Response(serializer.data)
-
-
-@api_view(['POST'])
-def login(request):
-    serializer = LoginSerializer(data=request.data)
-    if serializer.is_valid():
-        response_data = serializer.save()
-        return Response(response_data, status=status.HTTP_201_CREATED)
-    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def refresh(request):
-    serializer = RefreshSerializer(data=request.data)
-    if serializer.is_valid():
-        response_data = serializer.save()
-        return Response(response_data, status=status.HTTP_201_CREATED)
-    return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)

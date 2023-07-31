@@ -1,33 +1,38 @@
 import datetime
 
 import jwt
+from django.contrib.auth import password_validation
 from rest_framework import serializers
 
-from morec.settings import JWT_ACCESS_TTL, JWT_REFRESH_TTL, SECRET_KEY
+from morec.settings import JWT_ACCESS_TTL, SECRET_KEY
 from movies.models import Genre
 from users.models import User
 
 
 class UserVerifyEmailSerializer(serializers.ModelSerializer):
-    """Сериализатор для проверки почты в db"""
+    """Сериализатор для проверки почты в db."""
     class Meta:
         model = User
         fields = ('email',)
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для регистрации пользователей"""
+    """Сериализатор для регистрации пользователей."""
 
     class Meta:
         model = User
         fields = ('email', 'password', 'fav_genres')
 
+    def validate(self, data):
+        password_validation.validate_password(data['password'])
+        return data
+
 
 class LoginSerializer(serializers.Serializer):
+    """Сериализатор для авторизации пользователей."""
     email = serializers.EmailField(required=True, write_only=True)
     password = serializers.CharField(required=True, write_only=True)
     access = serializers.CharField(read_only=True)
-    refresh = serializers.CharField(read_only=True)
 
     def validate(self, attrs):
         validated_data = super().validate(attrs)
@@ -45,9 +50,6 @@ class LoginSerializer(serializers.Serializer):
         return validated_data
 
     def create(self, validated_data):
-        print(validated_data)
-        print(validated_data['user'].id)
-        print(type(validated_data['user'].id))
         user_id = str(validated_data['user'].id)
         access_payload = {
             'iss': 'backend-api',
@@ -56,78 +58,41 @@ class LoginSerializer(serializers.Serializer):
             'type': 'access'
         }
         access = jwt.encode(access_payload, SECRET_KEY)
-        print(jwt.decode(access, SECRET_KEY, algorithms=['HS256']))
 
-        refresh_payload = {
-            'iss': 'backend-api',
-            'user_id': user_id,
-            'exp': datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=JWT_REFRESH_TTL),
-            'type': 'refresh'
-        }
-        refresh = jwt.encode(refresh_payload, SECRET_KEY)
-
-        return {
-            'access': access,
-            'refresh': refresh
-        }
+        return {'access': access}
 
 
-class RefreshSerializer(serializers.Serializer):
-    refresh_token = serializers.CharField(required=True, write_only=True)
-    access = serializers.CharField(read_only=True)
-    refresh = serializers.CharField(read_only=True)
+class ChangePasswordSerializer(serializers.Serializer):
+    """Сериализатор для изменения пароля."""
+    password = serializers.CharField(
+        max_length=128, write_only=True, required=True
+    )
 
-    def validate(self, attrs):
-        validated_data = super().validate(attrs)
-        refresh_token = validated_data['refresh_token']
-        try:
-            payload = jwt.decode(refresh_token, SECRET_KEY)
-            if payload['type'] != 'refresh':
-                error_msg = {'refresh_token': 'Token type is not refresh!'}
-                raise serializers.ValidationError(error_msg)
-            validated_data['payload'] = payload
-        except jwt.ExpiredSignatureError:
-            error_msg = {'refresh_token': 'Refresh token is expired!'}
-            raise serializers.ValidationError(error_msg)
-        except jwt.InvalidTokenError:
-            error_msg = {'refresh_token': 'Refresh token is invalid!'}
-            raise serializers.ValidationError(error_msg)
+    def validate(self, data):
+        password_validation.validate_password(
+            data['password'], self.context['request'].user
+        )
+        return data
 
-        return validated_data
-
-    def create(self, validated_data):
-        access_payload = {
-            'iss': 'backend-api',
-            'email': validated_data['payload']['email'],
-            'exp': datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=JWT_ACCESS_TTL),
-            'type': 'access'
-        }
-        access = jwt.encode(access_payload, SECRET_KEY)
-
-        refresh_payload = {
-            'iss': 'backend-api',
-            'email': validated_data['payload']['email'],
-            'exp': datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=JWT_REFRESH_TTL),
-            'type': 'refresh'
-        }
-        refresh = jwt.encode(refresh_payload, SECRET_KEY)
-
-        return {
-            'access': access,
-            'refresh': refresh
-        }
+    def save(self, **kwargs):
+        password = self.validated_data['password']
+        user = self.context['request'].user
+        user.set_password(password)
+        user.save()
+        return user
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    """Сериализатор для пользователя"""
+    """Сериализатор для профиля пользователя."""
 
     class Meta:
         model = User
         fields = ('email', 'username', 'date_of_birth', 'sex')
-        read_only_fields = 'email'
+        read_only_fields = ['email']
 
 
 class FavoriteGenresSerializer(serializers.ModelSerializer):
+    """Сериализатор для любимых жанров."""
     fav_genres = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects,

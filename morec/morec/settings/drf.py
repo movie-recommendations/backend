@@ -10,7 +10,6 @@ REST_FRAMEWORK = {
 
 JWT_REGISTRATION_TTL = 3600  # время жизни токена для регистрации в секундах (1 час)
 JWT_ACCESS_TTL = 3600 * 24 * 7  # время жизни access токена в секундах (неделя)
-JWT_REFRESH_TTL = 3600 * 24 * 7  # время жизни refresh токена в секундах (неделя)
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
