@@ -14,7 +14,7 @@ from .views.compilations import (
 from .views.users import user_verify_email
 
 v1_router = DefaultRouter()
-v1_router.register('movies', MoviesViewSet)
+v1_router.register('movies', MoviesViewSet, basename='movies')
 v1_router.register('categories', CategoryViewSet)
 v1_router.register('gangres', GenreViewSet)
 v1_router.register('countries', CountryViewSet)

@@ -121,3 +121,18 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
             {'error': 'Рейтинг уже оставлен ранее'},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=(IsAuthenticated,),
+    )
+    def rates(self, request):
+        queryset = self.queryset.filter(
+            favorite_for=True
+        )
+        serializer = self.get_serializer(
+            queryset.values(), many=True
+        )
+        return Response(data=serializer.data)
