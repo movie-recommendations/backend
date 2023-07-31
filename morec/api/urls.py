@@ -14,10 +14,10 @@ from .views.compilations import (
 from .views.users import user_verify_email
 
 v1_router = DefaultRouter()
-v1_router.register('movies', MoviesViewSet)
-v1_router.register('categories', CategoryViewSet)
-v1_router.register('genres', GenreViewSet)
-v1_router.register('countries', CountryViewSet)
+v1_router.register('movies', MoviesViewSet, basename='movies')
+v1_router.register('categories', CategoryViewSet, basename='categories')
+v1_router.register('genres', GenreViewSet, basename='genres')
+v1_router.register('countries', CountryViewSet, basename='countries')
 v1_router.register(
     'compilations/redaction',
     ComplilationRedactorionListViewSet,
