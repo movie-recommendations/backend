@@ -213,3 +213,17 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     def movies_of_the_day(self, request):
         queryset = self.get_queryset().order_by('view_count')[:5]
         return Response(self.get_serializer(queryset, many=True).data)
+
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=(IsAuthenticated,),
+    )
+    def rates(self, request):
+        queryset = self.queryset.filter(
+            favorite_for=True
+        )
+        serializer = self.get_serializer(
+            queryset.values(), many=True
+        )
+        return Response(data=serializer.data)
