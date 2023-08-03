@@ -19,7 +19,7 @@ class SlugTitleAbstract(models.Model):
 
 class PersonAbstract(models.Model):
     name = models.CharField(verbose_name='Имя', max_length=100)
-    last_name = models.CharField(verbose_name='Фамилие', max_length=100)
+    last_name = models.CharField(verbose_name='Фамилия', max_length=100)
     picture = models.ImageField(
         verbose_name='Фото',
         upload_to='images/persons/',
@@ -37,7 +37,7 @@ class PersonAbstract(models.Model):
         ordering = ('name', 'last_name')
 
     def __str__(self):
-        return self.name
+        return f'{self.name} {self.last_name}'
 
 
 class RatingAbstract(models.Model):
