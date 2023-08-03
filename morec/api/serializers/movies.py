@@ -1,3 +1,4 @@
+from drf_yasg.utils import swagger_serializer_method
 from rest_framework import serializers
 
 from movies.models import Category, Country, Genre, Movie, RatingMovie
@@ -21,37 +22,49 @@ class CategoryInMovieSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'slug')
 
 
+class RateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ('rate_imdb', 'rate_kinopoisk')
+
+
 class MoviesListSerializer(serializers.ModelSerializer):
     year = serializers.SerializerMethodField()
     genres = serializers.StringRelatedField(many=True)
-    countries = serializers.StringRelatedField(many=True)
-    rating_count = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
+    is_need_see = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
         fields = (
             'id',
             'title',
-            'picture',
+            'v_picture',
+            'rating',
             'year',
-            'rating_avg',
-            'rating_count',
-            'age_limit',
             'genres',
-            'countries',
             'is_favorite',
+            'is_need_see',
         )
 
+    @swagger_serializer_method(serializer_or_field=RateSerializer)
+    def get_rating(self, obj):
+        return RateSerializer().to_representation(obj)
+
+    @swagger_serializer_method(serializer_or_field=serializers.IntegerField)
     def get_year(self, obj):
         return obj.premiere_date.year
 
-    def get_rating_count(self, obj):
-        return obj.ratings.count()
-
+    @swagger_serializer_method(serializer_or_field=serializers.BooleanField)
     def get_is_favorite(self, obj):
         user = self.context['request'].user
         return user in obj.favorite_for.all() if user else False
+
+    @swagger_serializer_method(serializer_or_field=serializers.BooleanField)
+    def get_is_need_see(self, obj):
+        user = self.context['request'].user
+        return user in obj.need_to_see.all() if user else False
 
 
 class MoviesDetailSerializer(serializers.ModelSerializer):
@@ -61,8 +74,9 @@ class MoviesDetailSerializer(serializers.ModelSerializer):
     actors = serializers.StringRelatedField(many=True)
     directors = serializers.StringRelatedField(many=True)
     is_favorite = serializers.SerializerMethodField()
-    is_rated = serializers.SerializerMethodField()
     is_need_see = serializers.SerializerMethodField()
+    user_rate = serializers.SerializerMethodField()
+    rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
@@ -70,11 +84,10 @@ class MoviesDetailSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'original_title',
-            'picture',
+            'v_picture',
+            'h_picture',
             'premiere_date',
-            'rating_avg',
-            'rate_imdb',
-            'rate_kinopoisk',
+            'rating',
             'duration_minutes',
             'age_limit',
             'genres',
@@ -84,24 +97,66 @@ class MoviesDetailSerializer(serializers.ModelSerializer):
             'categories',
             'description',
             'is_favorite',
-            'is_rated',
             'is_need_see',
+            'trailer_link',
+            'user_rate',
         )
 
+    @swagger_serializer_method(serializer_or_field=RateSerializer)
+    def get_rating(self, obj):
+        return RateSerializer().to_representation(obj)
+
+    @swagger_serializer_method(serializer_or_field=serializers.BooleanField)
     def get_is_favorite(self, obj):
         user = self.context['request'].user
         return user in obj.favorite_for.all() if user else False
 
-    def get_is_rated(self, obj):
-        user = self.context['request'].user
-        return user in obj.ratings.all() if user else False
-
+    @swagger_serializer_method(serializer_or_field=serializers.BooleanField)
     def get_is_need_see(self, obj):
         user = self.context['request'].user
         return user in obj.need_to_see.all() if user else False
 
+    @swagger_serializer_method(serializer_or_field=serializers.FloatField)
+    def get_user_rate(self, obj):
+        user = self.context['request'].user
+        if user.is_anonymous or not obj.ratings.filter(user=user).exists():
+            return 0
+        return obj.ratings.get(user=user).rate
+
 
 class MovieRateSerializer(serializers.ModelSerializer):
+    rate = serializers.IntegerField(
+        min_value=1,
+        max_value=10,
+    )
+
     class Meta:
         model = RatingMovie
         fields = ('rate',)
+
+
+class MoviesOfDaySerializer(serializers.ModelSerializer):
+    is_favorite = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Movie
+        fields = (
+            'id',
+            'title',
+            'short_description',
+            'h_picture',
+            'rate_imdb',
+            'rate_kinopoisk',
+            'is_favorite',
+        )
+
+    @swagger_serializer_method(serializer_or_field=serializers.BooleanField)
+    def get_is_favorite(self, obj):
+        user = self.context['request'].user
+        return user in obj.favorite_for.all() if user else False
+
+    @swagger_serializer_method(serializer_or_field=serializers.CharField)
+    def get_short_description(self, obj):
+        pos = obj.description.find(' ', 50)
+        return obj.description if pos == -1 else obj.description[:pos]

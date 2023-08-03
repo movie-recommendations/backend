@@ -18,7 +18,8 @@ class MoviesInComplilationsListSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'title',
-            'picture',
+            'v_picture',
+            'h_picture',
             'year',
             'rate_imdb',
             'rate_kinopoisk',
@@ -28,9 +29,6 @@ class MoviesInComplilationsListSerializer(serializers.ModelSerializer):
     def get_year(self, obj):
         return obj.premiere_date.year
 
-    def get_genres(self, obj):
-        return obj.genres.title
-
 
 class CompilationDetailSerializer(serializers.ModelSerializer):
     movies = MoviesInComplilationsListSerializer(many=True)
@@ -39,7 +37,7 @@ class CompilationDetailSerializer(serializers.ModelSerializer):
         model = Compilation
         fields = (
             'id', 'title', 'picture',
-            'movies', 'author',
+            'movies',
         )
 
 

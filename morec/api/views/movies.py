@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema, no_body
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
@@ -12,12 +13,15 @@ from rest_framework.viewsets import GenericViewSet
 from api.filters import MoviesFilter
 from api.serializers.movies import (MovieRateSerializer,
                                     MoviesDetailSerializer,
-                                    MoviesListSerializer)
+                                    MoviesListSerializer,
+                                    MoviesOfDaySerializer,)
 from movies.models import Movie, RatingMovie
 
 
 class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
-    queryset = Movie.objects.prefetch_related('genres', 'ratings', 'countries', 'favorite_for')
+    queryset = Movie.objects.prefetch_related(
+        'genres', 'ratings', 'countries', 'favorite_for'
+    )
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = MoviesFilter
     ordering_fields = ('view_count', 'rate_kinopoisk')
@@ -25,12 +29,18 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         'list': MoviesListSerializer,
         'retrieve': MoviesDetailSerializer,
         'newest': MoviesListSerializer,
+        'rated': MoviesListSerializer,
         'rate': MovieRateSerializer,
+        'favorites': MoviesListSerializer,
+        'watchlist': MoviesListSerializer,
+        'recomendations': MoviesListSerializer,
+        'movies_of_the_day': MoviesOfDaySerializer,
     }
 
     def get_serializer_class(self):
         return self.actions_serializer.get(self.action, MoviesListSerializer)
 
+    @swagger_auto_schema(responses={404: 'Not found'})
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.view_count += 1
@@ -51,6 +61,27 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         return Response(serializer.data)
 
     @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def favorites(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(favorite_for=user)
+        return Response(self.get_serializer(queryset, many=True).data)
+
+    @swagger_auto_schema(
+        method='delete',
+        responses={404: 'Not found'},
+        operation_description='Удаление из избранных.',
+    )
+    @swagger_auto_schema(
+        method='post',
+        request_body=no_body,
+        responses={404: 'Not found', 200: 'OK'},
+        operation_description='Добавление в изранные.',
+    )
+    @action(
         detail=True,
         methods=('post', 'delete'),
         permission_classes=(IsAuthenticated,),
@@ -65,6 +96,27 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         return Response(status=200)
 
     @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def watchlist(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(need_to_see=user)
+        return Response(self.get_serializer(queryset, many=True).data)
+
+    @swagger_auto_schema(
+        method='delete',
+        responses={404: 'Not found'},
+        operation_description='Удаление из списка просмотра',
+    )
+    @swagger_auto_schema(
+        method='post',
+        request_body=no_body,
+        responses={404: 'Not found', 200: 'OK'},
+        operation_description='Добавление в список просмотра',
+    )
+    @action(
         detail=True,
         methods=('post', 'delete'),
         permission_classes=(IsAuthenticated,),
@@ -78,6 +130,31 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
             movie.need_to_see.remove(user)
         return Response(status=200)
 
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def rated(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(ratings__user=user)
+        return Response(self.get_serializer(queryset, many=True).data)
+
+    @swagger_auto_schema(
+        method='delete',
+        responses={404: 'Not found'},
+        operation_description='Удаление оценки фильма.',
+    )
+    @swagger_auto_schema(
+        method='put',
+        responses={404: 'Not found', 200: 'OK'},
+        operation_description='Изменение оценки фильма.',
+    )
+    @swagger_auto_schema(
+        method='post',
+        responses={404: 'Not found', 201: 'Created'},
+        operation_description='Оценка фильма.',
+    )
     @action(
         detail=True,
         methods=('post', 'put', 'delete'),
@@ -121,3 +198,18 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
             {'error': 'Рейтинг уже оставлен ранее'},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        filter_backends=(),
+    )
+    def recomendations(self, request):
+        user = request.user
+        queryset = self.get_queryset().filter(genres__in=user.fav_genres.all())
+        return Response(self.get_serializer(queryset, many=True).data)
+
+    @action(detail=False, filter_backends=())
+    def movies_of_the_day(self, request):
+        queryset = self.get_queryset().order_by('view_count')[:5]
+        return Response(self.get_serializer(queryset, many=True).data)

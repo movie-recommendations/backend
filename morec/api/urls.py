@@ -18,15 +18,15 @@ from .views.users import (user_verify_email, favorite_genres,
 v1_router = DefaultRouter()
 v1_router.register('movies', MoviesViewSet)
 v1_router.register('categories', CategoryViewSet)
-v1_router.register('gangres', GenreViewSet)
+v1_router.register('genres', GenreViewSet)
 v1_router.register('countries', CountryViewSet)
 v1_router.register(
-    'complilations/redactorion',
+    'compilations/redaction',
     ComplilationRedactorionListViewSet,
     basename="comp-redac"
 )
 v1_router.register(
-    'complilations/favorite',
+    'compilations/favorite',
     ComplilationFavoriteListViewSet,
     basename="comp-favorite"
 )
@@ -44,8 +44,8 @@ urlpatterns = [
     path('v1/', include(v1_router.urls)),
 
     path(
-        'v1/complilations/<int:pk>/',
+        'v1/compilations/<int:pk>/',
         CompliationSoloViewSet.as_view(),
-        name="complilation"
+        name="compilation"
     ),
 ]

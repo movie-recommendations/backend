@@ -6,4 +6,4 @@ from movies.models import Genre
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
-        fields = ('id', 'title', 'slug')
+        fields = ('id', 'title', 'slug', 'picture')

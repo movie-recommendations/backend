@@ -13,8 +13,12 @@ class Movie(models.Model):
         blank=True,
     )
     description = models.TextField(verbose_name='Информация', blank=True)
-    picture = models.ImageField(
-        verbose_name='Фото',
+    v_picture = models.ImageField(
+        verbose_name='Фото вертикальное',
+        upload_to='images/movies/',
+    )
+    h_picture = models.ImageField(
+        verbose_name='Фото горизонтальное',
         upload_to='images/movies/',
     )
     premiere_date = models.DateField(verbose_name='Дата премьеры')
@@ -77,6 +81,7 @@ class Movie(models.Model):
         verbose_name='В списке просмотра у пользователей',
         related_name='need_see_movies',
     )
+    trailer_link = models.TextField()
 
     class Meta:
         ordering = ('rate_imdb', 'title')
