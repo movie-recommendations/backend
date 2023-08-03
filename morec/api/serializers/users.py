@@ -1,7 +1,7 @@
 import datetime
 
 import jwt
-from django.contrib.auth import password_validation
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from morec.settings import JWT_ACCESS_TTL, SECRET_KEY
@@ -24,7 +24,7 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
         fields = ('email', 'password', 'fav_genres')
 
     def validate(self, data):
-        password_validation.validate_password(data['password'])
+        validate_password(data['password'])
         return data
 
 
@@ -38,7 +38,7 @@ class LoginSerializer(serializers.Serializer):
         validated_data = super().validate(attrs)
         email = validated_data['email']
         password = validated_data['password']
-        error_msg = 'email or password are incorrect'
+        error_msg = 'email или пароль неверны'
         try:
             user = User.objects.get(email=email)
             if not user.check_password(password):
@@ -62,24 +62,40 @@ class LoginSerializer(serializers.Serializer):
         return {'access': access}
 
 
+class PasswordRecoverySerializer(serializers.Serializer):
+    """Сериализатор для формирования токена для восстановления пароля."""
+    email = serializers.EmailField(required=True)
+
+    def validate(self, attrs):
+        validated_data = super().validate(attrs)
+        email = validated_data['email']
+        error_msg = 'email не правильный'
+        try:
+            user = User.objects.get(email=email)
+            if not user:
+                raise serializers.ValidationError(error_msg)
+            validated_data['user'] = user
+        except User.DoesNotExist:
+            raise serializers.ValidationError(error_msg)
+
+        return validated_data
+
+
 class ChangePasswordSerializer(serializers.Serializer):
     """Сериализатор для изменения пароля."""
-    password = serializers.CharField(
-        max_length=128, write_only=True, required=True
-    )
+    token = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
 
     def validate(self, data):
-        password_validation.validate_password(
-            data['password'], self.context['request'].user
-        )
+        validate_password(data['new_password'])
         return data
 
-    def save(self, **kwargs):
-        password = self.validated_data['password']
-        user = self.context['request'].user
-        user.set_password(password)
-        user.save()
-        return user
+    # def save(self, **kwargs):
+    #     password = self.validated_data['new_password']
+    #     user = self.context['request'].user
+    #     user.set_password(password)
+    #     user.save()
+    #     return user
 
 
 class CustomUserSerializer(serializers.ModelSerializer):

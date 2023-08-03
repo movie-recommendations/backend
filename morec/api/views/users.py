@@ -2,19 +2,21 @@ import datetime
 
 import jwt
 from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from api.authentication.mail import sending_mail
 from api.serializers.users import (UserVerifyEmailSerializer,
                                    FavoriteGenresSerializer,
                                    CustomUserCreateSerializer, LoginSerializer,
                                    CustomUserSerializer,
-                                   ChangePasswordSerializer)
-from morec.settings import (SECRET_KEY, HOST, EMAIL_HOST_USER,
-                            JWT_REGISTRATION_TTL)
+                                   ChangePasswordSerializer,
+                                   PasswordRecoverySerializer)
+from morec.settings import (SECRET_KEY, EMAIL_HOST_USER,
+                            JWT_REGISTRATION_TTL, SITE_NAME)
 from users.models import User
 
 
@@ -30,13 +32,15 @@ def user_verify_email(request):
 def user_registration(request):
     serializer = CustomUserCreateSerializer(data=request.data)
     if serializer.is_valid():
-        payload = {"exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(JWT_REGISTRATION_TTL)}
+        payload = {"exp": datetime.datetime.now(
+            tz=datetime.timezone.utc) + datetime.timedelta(
+            JWT_REGISTRATION_TTL)}
         payload.update(serializer.data)
         encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
         subject = 'Активация аккаунта КиноТочка'
         message = (
             f'Для завершения регистрации перейдите по ссылке\n '
-            f'{HOST}/api/v1/auth/activation/{encoded_jwt}/\n'
+            f'{SITE_NAME}/api/v1/auth/activation/{encoded_jwt}/\n'
             f'ссылка активна 1 час'
         )
         recipient = serializer.data['email']
@@ -73,16 +77,47 @@ def login(request):
     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UpdatePassword(UpdateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ChangePasswordSerializer
+@api_view(['POST'])
+def password_recovery(request):
+    if request.user.is_authenticated:
+        return sending_mail(request.user.email)
+    serializer = PasswordRecoverySerializer(data=request.data)
+    if serializer.is_valid():
+        payload = {"exp": datetime.datetime.now(
+            tz=datetime.timezone.utc) + datetime.timedelta(
+            JWT_REGISTRATION_TTL)}
+        payload.update(serializer.data)
+        encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+        subject = 'Восстановление пароля КиноТочка'
+        message = (
+            f'Для восстановления пароля перейдите по ссылке\n '
+            f'{SITE_NAME}/v1/auth/password-recovery/{encoded_jwt}/\n'
+            f'ссылка активна 1 час'
+        )
+        recipient = serializer.data['email']
+        send_mail(subject, message, EMAIL_HOST_USER, [recipient])
+        return sending_mail(serializer.data['email'])
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+
+@api_view(['PUT'])
+def update_password(request):
+    serializer = ChangePasswordSerializer(data=request.data)
+    if serializer.is_valid():
+        try:
+            payload = jwt.decode(
+                serializer.data.get('token'), SECRET_KEY, algorithms="HS256"
+            )
+            user = get_object_or_404(User, email=payload['email'])
+            user.set_password(serializer.data.get('new_password'))
+            user.save()
             return Response(status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.ExpiredSignatureError:
+            return Response(
+                'Срок действия ссылки истек',
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UsersMe(generics.RetrieveUpdateDestroyAPIView):
