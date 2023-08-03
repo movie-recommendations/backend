@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from .forms import GenreForm
 from .models import (Actor, Category, Compilation, Country, Director, Genre,
                      Movie)
 
@@ -29,6 +30,7 @@ class DirectorAdmin(admin.ModelAdmin):
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     exclude = ('favorite', )
+    form = GenreForm
 
 
 admin.site.register(Country)
