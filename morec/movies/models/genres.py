@@ -13,6 +13,12 @@ class Genre(SlugTitleAbstract):
         related_name='fav_genres',
         blank=True,
     )
+    picture = models.ImageField(
+        verbose_name='Картинка',
+        upload_to='images/genres/',
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = 'Жанр'
