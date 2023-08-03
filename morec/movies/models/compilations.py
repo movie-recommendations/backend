@@ -1,10 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from .mixins import ImageDeleteMixin
+
 User = get_user_model()
 
 
-class Compilation(models.Model):
+class Compilation(models.Model, ImageDeleteMixin):
+    image_fields = ('picture',)
+
     title = models.CharField(verbose_name='Название', max_length=100)
     description = models.TextField(verbose_name='Информация', blank=True)
     picture = models.ImageField(
@@ -39,3 +43,11 @@ class Compilation(models.Model):
 
     def __str__(self):
         return self.title
+
+    def delete(self, *args, **kwargs):
+        self.picture.delete(save=False)
+        return super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.remove_image_on_update()
+        return super().save(*args, **kwargs)
