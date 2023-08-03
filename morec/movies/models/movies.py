@@ -2,10 +2,14 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from .mixins import ImageDeleteMixin
+
 User = get_user_model()
 
 
-class Movie(models.Model):
+class Movie(models.Model, ImageDeleteMixin):
+    image_fields = ('h_picture', 'v_picture')
+
     title = models.CharField(verbose_name='Название', max_length=150)
     original_title = models.CharField(
         verbose_name='Оригинальное название',
@@ -91,3 +95,12 @@ class Movie(models.Model):
 
     def __str__(self):
         return f'{self.title} - {self.premiere_date.year}'
+
+    def delete(self, *args, **kwargs):
+        self.h_picture.delete(save=False)
+        self.v_picture.delete(save=False)
+        return super().delete(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        self.remove_image_on_update()
+        return super().save(*args, **kwargs)
