@@ -1,27 +1,22 @@
-DJOSER = {
-    'LOGIN_FIELD': 'email',
-    'HIDE_USERS': False,
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
-    'ACTIVATION_URL': '#/activate/{uid}/{token}',
-    'SEND_ACTIVATION_EMAIL': True,
-    'PERMISSIONS': {
-        'user': ['djoser.permissions.CurrentUserOrAdmin'],
-        'user_list': ['rest_framework.permissions.IsAdminUser'],
-    },
-    'SERIALIZERS': {
-        'user_create': 'api.serializers.users.CustomUserCreateSerializer',
-        'user': 'api.serializers.users.CustomUserSerializer',
-        'current_user': 'api.serializers.users.CustomUserSerializer',
-    },
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'api.authentication.backends.JWTAuthentication',
     ],
 }
+
+
+JWT_REGISTRATION_TTL = 3600  # время жизни токена для регистрации в секундах (1 час)
+JWT_ACCESS_TTL = 3600 * 24 * 7  # время жизни access токена в секундах (неделя)
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+SITE_NAME = "http://127.0.0.1:8000"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "your@gmail.com"
+EMAIL_HOST_PASSWORD = "password"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
