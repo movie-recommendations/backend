@@ -90,21 +90,20 @@ class ChangePasswordSerializer(serializers.Serializer):
         validate_password(data['new_password'])
         return data
 
-    # def save(self, **kwargs):
-    #     password = self.validated_data['new_password']
-    #     user = self.context['request'].user
-    #     user.set_password(password)
-    #     user.save()
-    #     return user
-
 
 class CustomUserSerializer(serializers.ModelSerializer):
     """Сериализатор для профиля пользователя."""
+    fav_genres = serializers.SlugRelatedField(
+        slug_field='slug',
+        queryset=Genre.objects,
+        required=False,
+        many=True,
+    )
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'date_of_birth', 'sex')
-        read_only_fields = ['email']
+        fields = ('email', 'username', 'date_of_birth', 'sex', 'fav_genres')
+        read_only_fields = ('fav_genres', 'email')
 
 
 class FavoriteGenresSerializer(serializers.ModelSerializer):
@@ -118,4 +117,4 @@ class FavoriteGenresSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'fav_genres')
+        fields = ('fav_genres',)
