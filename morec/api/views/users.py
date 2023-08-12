@@ -3,6 +3,7 @@ import datetime
 import jwt
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +21,11 @@ from morec.settings import (SECRET_KEY, EMAIL_HOST_USER,
 from users.models import User
 
 
+@swagger_auto_schema(
+    method='post',
+    request_body=UserVerifyEmailSerializer,
+    responses={400: 'errors', 200: 'OK'},
+)
 @api_view(['POST'])
 def user_verify_email(request):
     serializer = UserVerifyEmailSerializer(data=request.data)
@@ -28,6 +34,11 @@ def user_verify_email(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    method='post',
+    request_body=CustomUserCreateSerializer,
+    responses={400: 'errors', 200: 'OK'},
+)
 @api_view(['POST'])
 def user_registration(request):
     serializer = CustomUserCreateSerializer(data=request.data)
@@ -68,6 +79,11 @@ def user_create_activate(request, token):
         )
 
 
+@swagger_auto_schema(
+    method='post',
+    request_body=LoginSerializer,
+    responses={400: 'errors', 201: 'access: "some_token"'},
+)
 @api_view(['POST'])
 def login(request):
     serializer = LoginSerializer(data=request.data)
@@ -77,6 +93,11 @@ def login(request):
     return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    method='post',
+    request_body=PasswordRecoverySerializer,
+    responses={400: 'errors', 200: 'OK'},
+)
 @api_view(['POST'])
 def password_recovery(request):
     if request.user.is_authenticated:
@@ -100,6 +121,11 @@ def password_recovery(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    method='put',
+    request_body=ChangePasswordSerializer,
+    responses={400: 'errors', 200: 'OK'},
+)
 @api_view(['PUT'])
 def update_password(request):
     serializer = ChangePasswordSerializer(data=request.data)
@@ -121,7 +147,7 @@ def update_password(request):
 
 
 class UsersMe(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
 
@@ -129,6 +155,15 @@ class UsersMe(generics.RetrieveUpdateDestroyAPIView):
         return self.request.user
 
 
+@swagger_auto_schema(
+    method='put',
+    request_body=FavoriteGenresSerializer,
+    responses={400: 'errors', 201: FavoriteGenresSerializer, 403: 'error'},
+)
+@swagger_auto_schema(
+    method='get',
+    responses={200: FavoriteGenresSerializer, 403: 'error'},
+)
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def favorite_genres(request):
