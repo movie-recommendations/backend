@@ -1,7 +1,7 @@
 import datetime
 
 import jwt
-from django.core.mail import send_mail
+from ..tasks import send_email
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -21,5 +21,5 @@ def sending_mail(email):
         f'ссылка активна 1 час'
     )
     recipient = email
-    send_mail(subject, message, EMAIL_HOST_USER, [recipient])
+    send_email.delay(subject, message, EMAIL_HOST_USER, [recipient])
     return Response(status=status.HTTP_200_OK)
