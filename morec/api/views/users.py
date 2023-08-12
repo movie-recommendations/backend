@@ -1,7 +1,6 @@
 import datetime
 
 import jwt
-from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, generics
@@ -16,6 +15,7 @@ from api.serializers.users import (UserVerifyEmailSerializer,
                                    CustomUserSerializer,
                                    ChangePasswordSerializer,
                                    PasswordRecoverySerializer)
+from api.tasks import send_email
 from morec.settings import (SECRET_KEY, EMAIL_HOST_USER,
                             JWT_REGISTRATION_TTL, SITE_NAME)
 from users.models import User
@@ -55,7 +55,7 @@ def user_registration(request):
             f'ссылка активна 1 час'
         )
         recipient = serializer.data['email']
-        send_mail(subject, message, EMAIL_HOST_USER, [recipient])
+        send_email.delay(subject, message, [recipient], EMAIL_HOST_USER)
         return Response(status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

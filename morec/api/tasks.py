@@ -4,13 +4,15 @@ from morec.celery import app
 
 
 @app.task()
-def send_email(subject,
-               message,
-               recipient_list,
-               from_email=settings.EMAIL_HOST_USER,
-               fail_silently=False,
-               connection=None,
-               html_message=None,):
+def send_email(
+        subject,
+        message,
+        recipient_list,
+        from_email=settings.EMAIL_HOST_USER,
+        fail_silently=False,
+        connection=None,
+        html_message=None,
+):
 
     send_mail(
         subject=subject,
@@ -20,5 +22,4 @@ def send_email(subject,
         recipient_list=recipient_list,
         connection=connection,
         html_message=html_message,
-
     )
