@@ -14,7 +14,7 @@ services:
 
   backend:
     restart: always
-    image: mover/kinotochka_backend:v1
+    image: movrec/kinotochka_backend:v1
     env_file: devops.env
     command: gunicorn morec.wsgi:application --bind 0:8000
     volumes:
@@ -39,7 +39,7 @@ services:
 
   celery:
     restart: always
-    image: mover/kinotochka_backend:v1
+    image: movrec/kinotochka_backend:v1
     env_file: devops.env
     command: celery -A morec worker -B -l INFO
     depends_on:
