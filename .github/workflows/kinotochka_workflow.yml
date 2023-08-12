@@ -3,7 +3,7 @@ name: kinotochka_workflow
 on:
   push:
     branches:
-    - master
+    - main
 
 jobs:
   build_and_push_to_docker_hub:
