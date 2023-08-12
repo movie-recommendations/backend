@@ -1,8 +1,8 @@
 name: kinotochka_workflow
 
 on:
-  pull_request:
-    branches: [ "master" ]
+  push:
+    branches: [ "main" ]
 
 jobs:
   build_and_push_to_docker_hub:
