@@ -21,5 +21,5 @@ def sending_mail(email):
         f'ссылка активна 1 час'
     )
     recipient = email
-    send_email.delay(subject, message, EMAIL_HOST_USER, [recipient])
+    send_email.delay(subject, message, [recipient], EMAIL_HOST_USER)
     return Response(status=status.HTTP_200_OK)
