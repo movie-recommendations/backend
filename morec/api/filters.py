@@ -1,6 +1,29 @@
+from django.db.models import Q
 from django_filters import rest_framework as filters
 
-from movies.models import Movie
+from movies.models import Movie, Actor, Director
+
+
+class PersonBaseFilter(filters.FilterSet):
+    name = filters.CharFilter(method='get_person')
+
+    class Meta:
+        fields = ('name',)
+
+    def get_person(self, qs, name, value):
+        return qs.filter(
+            Q(name__istartswith=value) | Q(last_name__istartswith=value)
+        )
+
+
+class ActorFilter(PersonBaseFilter):
+    class Meta(PersonBaseFilter.Meta):
+        model = Actor
+
+
+class DirectorFilter(PersonBaseFilter):
+    class Meta(PersonBaseFilter.Meta):
+        model = Director
 
 
 class MoviesFilter(filters.FilterSet):
@@ -9,13 +32,13 @@ class MoviesFilter(filters.FilterSet):
         field_name='original_title',
         lookup_expr='icontains',
     )
-    actor = filters.CharFilter(
+    actor = filters.NumberFilter(
         field_name='actors',
-        lookup_expr='name__icontains',
+        lookup_expr='id__exact',
     )
-    director = filters.CharFilter(
+    director = filters.NumberFilter(
         field_name='directors',
-        lookup_expr='name__icontains',
+        lookup_expr='id__exact',
     )
     genre = filters.CharFilter(
         field_name='genres',
