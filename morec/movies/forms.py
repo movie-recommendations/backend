@@ -1,13 +1,13 @@
 from io import BytesIO
 
-from django.core.exceptions import ValidationError
-from django.core.validators import get_available_image_extensions, \
-    FileExtensionValidator
+from defusedxml import ElementTree
 from django import forms
+from django.core.exceptions import ValidationError
+from django.core.validators import (FileExtensionValidator,
+                                    get_available_image_extensions)
+from PIL import Image
 
 from movies.models import Genre
-from defusedxml import ElementTree
-from PIL import Image
 
 
 def validate_image_and_svg_file_extension(value):

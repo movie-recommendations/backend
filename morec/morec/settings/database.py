@@ -1,5 +1,6 @@
-from .core import BASE_DIR
 import os
+
+from .core import BASE_DIR
 
 DATABASES = {
     'default': {

@@ -3,8 +3,8 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
 from api.filters import DirectorFilter
-from movies.models import Director
 from api.serializers.directors import DirectorSerializer
+from movies.models import Director
 
 
 class DirectorViewSet(ListModelMixin, GenericViewSet):

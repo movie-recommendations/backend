@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from movies.models import Genre
+
 from .models import User
 
 

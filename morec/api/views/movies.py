@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_yasg.utils import swagger_auto_schema, no_body
+from drf_yasg.utils import no_body, swagger_auto_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
@@ -14,7 +14,7 @@ from api.filters import MoviesFilter
 from api.serializers.movies import (MovieRateSerializer,
                                     MoviesDetailSerializer,
                                     MoviesListSerializer,
-                                    MoviesOfDaySerializer,)
+                                    MoviesOfDaySerializer)
 from movies.models import Movie, RatingMovie
 
 

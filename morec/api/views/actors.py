@@ -3,8 +3,8 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
 from api.filters import ActorFilter
-from movies.models import Actor
 from api.serializers.actors import ActorSerializer
+from movies.models import Actor
 
 
 class ActorViewSet(ListModelMixin, GenericViewSet):
