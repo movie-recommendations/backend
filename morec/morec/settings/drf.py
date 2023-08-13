@@ -15,7 +15,7 @@ JWT_ACCESS_TTL = 3600 * 24 * 7  # время жизни access токена в �
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-SITE_NAME = os.environ.get('HOST', 'http://localhost')
+SITE_NAME = os.environ.get('SITE_NAME', 'http://localhost')
 EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_PORT = 2525
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')

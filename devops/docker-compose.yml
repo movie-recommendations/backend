@@ -22,6 +22,7 @@ services:
       - media_value:/app/media/
     depends_on:
       - postgres_db
+      - redis
 
   postgres_db:
     image: "postgres:13.4-alpine"
