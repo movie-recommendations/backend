@@ -1,12 +1,13 @@
 import datetime
 
 import jwt
-from ..tasks import send_email
 from rest_framework import status
 from rest_framework.response import Response
 
-from morec.settings import (JWT_REGISTRATION_TTL, SECRET_KEY, SITE_NAME,
-                            EMAIL_HOST_USER)
+from morec.settings import (EMAIL_HOST_USER, JWT_REGISTRATION_TTL, SECRET_KEY,
+                            SITE_NAME)
+
+from ..tasks import send_email
 
 
 def sending_mail(email):

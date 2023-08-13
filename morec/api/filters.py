@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django_filters import rest_framework as filters
 
-from movies.models import Movie, Actor, Director
+from movies.models import Actor, Director, Movie
 
 
 class PersonBaseFilter(filters.FilterSet):

@@ -4,18 +4,16 @@ from rest_framework.routers import DefaultRouter
 from .docs import urlpatterns as docs_urlpatterns
 from .views.actors import ActorViewSet
 from .views.categories import CategoryViewSet
-from .views.compilations import (
-    CompliationSoloViewSet,
-    ComplilationRedactorionListViewSet,
-    ComplilationFavoriteListViewSet
-)
+from .views.compilations import (CompliationSoloViewSet,
+                                 ComplilationFavoriteListViewSet,
+                                 ComplilationRedactorionListViewSet)
 from .views.countries import CountryViewSet
 from .views.directors import DirectorViewSet
 from .views.genres import GenreViewSet
 from .views.movies import MoviesViewSet
-from .views.users import (user_verify_email, favorite_genres,
-                          user_registration, user_create_activate, login,
-                          UsersMe, password_recovery, update_password)
+from .views.users import (UsersMe, favorite_genres, login, password_recovery,
+                          update_password, user_create_activate,
+                          user_registration, user_verify_email)
 
 v1_router = DefaultRouter()
 v1_router.register('movies', MoviesViewSet)

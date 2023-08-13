@@ -1,8 +1,8 @@
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-from movies.models import Category
 from api.serializers.categories import CategorySerializer
+from movies.models import Category
 
 
 class CategoryViewSet(ListModelMixin, GenericViewSet):

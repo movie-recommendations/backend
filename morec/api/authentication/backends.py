@@ -1,5 +1,4 @@
 import jwt
-
 from rest_framework import authentication, exceptions
 
 from morec.settings import SECRET_KEY

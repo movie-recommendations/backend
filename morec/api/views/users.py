@@ -3,21 +3,21 @@ import datetime
 import jwt
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import status, generics
+from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.authentication.mail import sending_mail
-from api.serializers.users import (UserVerifyEmailSerializer,
-                                   FavoriteGenresSerializer,
-                                   CustomUserCreateSerializer, LoginSerializer,
+from api.serializers.users import (ChangePasswordSerializer,
+                                   CustomUserCreateSerializer,
                                    CustomUserSerializer,
-                                   ChangePasswordSerializer,
-                                   PasswordRecoverySerializer)
+                                   FavoriteGenresSerializer, LoginSerializer,
+                                   PasswordRecoverySerializer,
+                                   UserVerifyEmailSerializer)
 from api.tasks import send_email
-from morec.settings import (SECRET_KEY, EMAIL_HOST_USER,
-                            JWT_REGISTRATION_TTL, SITE_NAME)
+from morec.settings import (EMAIL_HOST_USER, JWT_REGISTRATION_TTL, SECRET_KEY,
+                            SITE_NAME)
 from users.models import User
 
 

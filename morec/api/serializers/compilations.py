@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from api.serializers.mixins import (IsFavoriteMixin, IsNeedSeeMixin,
+                                    RateInMovieMixin)
 from movies.models import Compilation, Genre, Movie
 
 
@@ -9,7 +11,12 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'slug')
 
 
-class MoviesInComplilationsListSerializer(serializers.ModelSerializer):
+class MoviesInComplilationsListSerializer(
+    RateInMovieMixin,
+    IsFavoriteMixin,
+    IsNeedSeeMixin,
+    serializers.ModelSerializer
+):
     year = serializers.SerializerMethodField()
     genres = serializers.StringRelatedField(many=True)
 
@@ -21,9 +28,10 @@ class MoviesInComplilationsListSerializer(serializers.ModelSerializer):
             'v_picture',
             'h_picture',
             'year',
-            'rate_imdb',
-            'rate_kinopoisk',
+            'rating',
             'genres',
+            'is_favorite',
+            'is_need_see',
         )
 
     def get_year(self, obj):
