@@ -1,8 +1,8 @@
 from rest_framework.mixins import ListModelMixin
 from rest_framework.viewsets import GenericViewSet
 
-from movies.models import Genre
 from api.serializers.genres import GenreSerializer
+from movies.models import Genre
 
 
 class GenreViewSet(ListModelMixin, GenericViewSet):
