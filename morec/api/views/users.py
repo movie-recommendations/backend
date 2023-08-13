@@ -83,19 +83,6 @@ def password_recovery(request):
         return sending_mail(request.user.email)
     serializer = PasswordRecoverySerializer(data=request.data)
     if serializer.is_valid():
-        payload = {"exp": datetime.datetime.now(
-            tz=datetime.timezone.utc) + datetime.timedelta(
-            JWT_REGISTRATION_TTL)}
-        payload.update(serializer.data)
-        encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-        subject = 'Восстановление пароля КиноТочка'
-        message = (
-            f'Для восстановления пароля перейдите по ссылке\n '
-            f'{SITE_NAME}/v1/auth/password-recovery/{encoded_jwt}/\n'
-            f'ссылка активна 1 час'
-        )
-        recipient = serializer.data['email']
-        send_mail(subject, message, EMAIL_HOST_USER, [recipient])
         return sending_mail(serializer.data['email'])
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

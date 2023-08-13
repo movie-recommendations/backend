@@ -54,7 +54,9 @@ class LoginSerializer(serializers.Serializer):
         access_payload = {
             'iss': 'backend-api',
             'user_id': user_id,
-            'exp': datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(seconds=JWT_ACCESS_TTL),
+            'exp': datetime.datetime.now(
+                tz=datetime.timezone.utc) + datetime.timedelta(
+                seconds=JWT_ACCESS_TTL),
             'type': 'access'
         }
         access = jwt.encode(access_payload, SECRET_KEY)
