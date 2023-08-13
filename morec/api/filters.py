@@ -32,13 +32,13 @@ class MoviesFilter(filters.FilterSet):
         field_name='original_title',
         lookup_expr='icontains',
     )
-    actor = filters.CharFilter(
+    actor = filters.NumberFilter(
         field_name='actors',
-        lookup_expr='name__icontains',
+        lookup_expr='id__exact',
     )
-    director = filters.CharFilter(
+    director = filters.NumberFilter(
         field_name='directors',
-        lookup_expr='name__icontains',
+        lookup_expr='id__exact',
     )
     genre = filters.CharFilter(
         field_name='genres',
