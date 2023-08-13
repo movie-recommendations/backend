@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from .docs import urlpatterns as docs_urlpatterns
+from .views.actors import ActorViewSet
 from .views.categories import CategoryViewSet
 from .views.compilations import (
     CompliationSoloViewSet,
@@ -9,6 +10,7 @@ from .views.compilations import (
     ComplilationFavoriteListViewSet
 )
 from .views.countries import CountryViewSet
+from .views.directors import DirectorViewSet
 from .views.genres import GenreViewSet
 from .views.movies import MoviesViewSet
 from .views.users import (user_verify_email, favorite_genres,
@@ -30,6 +32,8 @@ v1_router.register(
     ComplilationFavoriteListViewSet,
     basename="comp-favorite"
 )
+v1_router.register('actors', ActorViewSet)
+v1_router.register('directors', DirectorViewSet)
 
 urlpatterns = [
     path('v1/auth/verify-email/', user_verify_email),
