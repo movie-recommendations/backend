@@ -1,7 +1,7 @@
 import datetime
 
 import jwt
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status, generics
 from rest_framework.decorators import api_view, permission_classes
@@ -71,7 +71,9 @@ def user_create_activate(request, token):
             user = User.objects.create_user(**validated_data, is_active=True)
             if genres is not None:
                 user.fav_genres.add(*genres)
-            return Response(status=status.HTTP_201_CREATED)
+            return redirect(
+                'http://kinotochka.acceleratorpracticum.ru/confirm-email/'
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except jwt.ExpiredSignatureError:
         return Response(
@@ -124,7 +126,9 @@ def update_password(request):
             user = get_object_or_404(User, email=payload['email'])
             user.set_password(serializer.data.get('new_password'))
             user.save()
-            return Response(status=status.HTTP_200_OK)
+            return redirect(
+                'http://kinotochka.acceleratorpracticum.ru/reset-password/'
+            )
         except jwt.ExpiredSignatureError:
             return Response(
                 'Срок действия ссылки истек',
