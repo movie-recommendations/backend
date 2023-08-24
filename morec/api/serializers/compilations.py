@@ -11,7 +11,7 @@ class GenreSerializer(serializers.ModelSerializer):
         fields = ('id', 'title', 'slug')
 
 
-class MoviesInComplilationsListSerializer(
+class MoviesInCompilationsListSerializer(
     RateInMovieMixin,
     IsFavoriteMixin,
     IsNeedSeeMixin,
@@ -39,19 +39,22 @@ class MoviesInComplilationsListSerializer(
 
 
 class CompilationDetailSerializer(serializers.ModelSerializer):
-    movies = MoviesInComplilationsListSerializer(many=True)
+    movies = MoviesInCompilationsListSerializer(many=True)
 
     class Meta:
         model = Compilation
         fields = (
-            'id', 'title', 'picture',
+            'id',
+            'title',
+            'picture',
             'movies',
+            'description',
         )
 
 
 class CompilationListSerializer(serializers.ModelSerializer):
-    movies = MoviesInComplilationsListSerializer(many=True)
+    movies = MoviesInCompilationsListSerializer(many=True)
 
     class Meta:
         model = Compilation
-        fields = ('id', 'title', 'movies')
+        fields = ('id', 'title', 'movies', 'description')
