@@ -44,8 +44,11 @@ class CompilationDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Compilation
         fields = (
-            'id', 'title', 'picture',
+            'id',
+            'title',
+            'picture',
             'movies',
+            'description',
         )
 
 
@@ -54,4 +57,4 @@ class CompilationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Compilation
-        fields = ('id', 'title', 'movies')
+        fields = ('id', 'title', 'movies', 'description')
