@@ -8,13 +8,13 @@ from api.serializers.compilations import (CompilationDetailSerializer,
 from movies.models.compilations import Compilation
 
 
-class CompliationSoloViewSet(RetrieveAPIView):
+class CompilationSoloViewSet(RetrieveAPIView):
     permission_classes = (AllowAny,)
     queryset = Compilation.objects.all()
     serializer_class = CompilationDetailSerializer
 
 
-class ComplilationRedactorionListViewSet(
+class CompilationRedactionListViewSet(
     ListModelMixin,
     GenericViewSet
 ):
@@ -27,7 +27,7 @@ class ComplilationRedactorionListViewSet(
         return new_queryset
 
 
-class ComplilationFavoriteListViewSet(
+class CompilationFavoriteListViewSet(
     ListModelMixin,
     GenericViewSet
 ):

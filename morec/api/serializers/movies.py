@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from api.serializers.mixins import (IsFavoriteMixin, IsNeedSeeMixin,
                                     RateInMovieMixin)
+from morec.settings import const
 from movies.models import Category, Country, Genre, Movie, RatingMovie
 
 
@@ -98,8 +99,8 @@ class MoviesDetailSerializer(
 
 class MovieRateSerializer(serializers.ModelSerializer):
     rate = serializers.IntegerField(
-        min_value=1,
-        max_value=10,
+        min_value=const.MIN_RATE,
+        max_value=const.MAX_RATE,
     )
 
     class Meta:
@@ -127,5 +128,5 @@ class MoviesOfDaySerializer(
 
     @swagger_serializer_method(serializer_or_field=serializers.CharField)
     def get_short_description(self, obj):
-        pos = obj.description.find(' ', 50)
+        pos = obj.description.find(' ', const.DESCRIPTION_SYM_COUNT)
         return obj.description if pos == -1 else obj.description[:pos]
