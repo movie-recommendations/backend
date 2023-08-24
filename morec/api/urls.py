@@ -4,9 +4,9 @@ from rest_framework.routers import DefaultRouter
 from .docs import urlpatterns as docs_urlpatterns
 from .views.actors import ActorViewSet
 from .views.categories import CategoryViewSet
-from .views.compilations import (CompliationSoloViewSet,
-                                 ComplilationFavoriteListViewSet,
-                                 ComplilationRedactorionListViewSet)
+from .views.compilations import (CompilationSoloViewSet,
+                                 CompilationFavoriteListViewSet,
+                                 CompilationRedactionListViewSet)
 from .views.countries import CountryViewSet
 from .views.directors import DirectorViewSet
 from .views.genres import GenreViewSet
@@ -22,12 +22,12 @@ v1_router.register('genres', GenreViewSet)
 v1_router.register('countries', CountryViewSet)
 v1_router.register(
     'compilations/redaction',
-    ComplilationRedactorionListViewSet,
+    CompilationRedactionListViewSet,
     basename="comp-redac"
 )
 v1_router.register(
     'compilations/favorite',
-    ComplilationFavoriteListViewSet,
+    CompilationFavoriteListViewSet,
     basename="comp-favorite"
 )
 v1_router.register('actors', ActorViewSet)
@@ -47,7 +47,7 @@ urlpatterns = [
 
     path(
         'v1/compilations/<int:pk>/',
-        CompliationSoloViewSet.as_view(),
+        CompilationSoloViewSet.as_view(),
         name="compilation"
     ),
 ]

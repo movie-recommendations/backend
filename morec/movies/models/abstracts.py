@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from morec.settings import const
+
 User = get_user_model()
 
 
@@ -49,8 +51,8 @@ class RatingAbstract(models.Model):
     rate = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
         validators=(
-            MinValueValidator(1),
-            MaxValueValidator(10),
+            MinValueValidator(const.MIN_RATE),
+            MaxValueValidator(const.MAX_RATE),
         ),
     )
 
