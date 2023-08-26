@@ -72,7 +72,7 @@ def user_create_activate(request, token):
             if genres is not None:
                 user.fav_genres.add(*genres)
             return redirect(
-                'http://kinotochka.acceleratorpracticum.ru/confirm-email/'
+                f'{SITE_NAME}/confirm-email/'
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except jwt.ExpiredSignatureError:
@@ -126,9 +126,7 @@ def update_password(request):
             user = get_object_or_404(User, email=payload['email'])
             user.set_password(serializer.data.get('new_password'))
             user.save()
-            return redirect(
-                'http://kinotochka.acceleratorpracticum.ru/reset-password/'
-            )
+            return Response(status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return Response(
                 'Срок действия ссылки истек',
