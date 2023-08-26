@@ -32,7 +32,7 @@ class User(AbstractBaseUser):
     )
     username = models.CharField(
         verbose_name='Логин',
-        max_length=10,
+        max_length=32,
         null=True,
         blank=True,
         help_text='Введите свой логин'
