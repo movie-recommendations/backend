@@ -18,7 +18,7 @@ def sending_mail(email):
     subject = 'Восстановление пароля КиноТочка'
     message = (
         f'Для восстановления пароля перейдите по ссылке\n '
-        f'{SITE_NAME}/v1/auth/password-recovery/{encoded_jwt}/\n'
+        f'{SITE_NAME}/reset-password/{encoded_jwt}/\n'
         f'ссылка активна 1 час'
     )
     recipient = email
