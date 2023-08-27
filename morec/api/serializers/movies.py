@@ -40,6 +40,7 @@ class MoviesListSerializer(
             'id',
             'title',
             'v_picture',
+            'h_picture',
             'rating',
             'year',
             'genres',
