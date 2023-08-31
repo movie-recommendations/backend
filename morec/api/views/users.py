@@ -2,6 +2,7 @@ import datetime
 
 import jwt
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
@@ -25,6 +26,7 @@ from users.models import User
     method='post',
     request_body=UserVerifyEmailSerializer,
     responses={400: 'errors', 200: 'OK'},
+    tags=['Аутентификация'],
 )
 @api_view(['POST'])
 def user_verify_email(request):
@@ -38,6 +40,7 @@ def user_verify_email(request):
     method='post',
     request_body=CustomUserCreateSerializer,
     responses={400: 'errors', 200: 'OK'},
+    tags=['Аутентификация'],
 )
 @api_view(['POST'])
 def user_registration(request):
@@ -60,6 +63,10 @@ def user_registration(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@swagger_auto_schema(
+    method='get',
+    tags=['Аутентификация'],
+)
 @api_view(['GET'])
 def user_create_activate(request, token):
     try:
@@ -85,6 +92,7 @@ def user_create_activate(request, token):
     method='post',
     request_body=LoginSerializer,
     responses={400: 'errors', 201: 'access: "some_token"'},
+    tags=['Аутентификация'],
 )
 @api_view(['POST'])
 def login(request):
@@ -99,6 +107,7 @@ def login(request):
     method='post',
     request_body=PasswordRecoverySerializer,
     responses={400: 'errors', 200: 'OK'},
+    tags=['Аутентификация'],
 )
 @api_view(['POST'])
 def password_recovery(request):
@@ -114,6 +123,7 @@ def password_recovery(request):
     method='put',
     request_body=ChangePasswordSerializer,
     responses={400: 'errors', 200: 'OK'},
+    tags=['Аутентификация'],
 )
 @api_view(['PUT'])
 def update_password(request):
@@ -135,6 +145,18 @@ def update_password(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    tags=['Пользователь'],
+))
+@method_decorator(name='put', decorator=swagger_auto_schema(
+    tags=['Пользователь'],
+))
+@method_decorator(name='delete', decorator=swagger_auto_schema(
+    tags=['Пользователь'],
+))
+@method_decorator(name='patch', decorator=swagger_auto_schema(
+    tags=['Пользователь'],
+))
 class UsersMe(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = User.objects.all()
@@ -148,10 +170,12 @@ class UsersMe(generics.RetrieveUpdateDestroyAPIView):
     method='put',
     request_body=FavoriteGenresSerializer,
     responses={400: 'errors', 201: FavoriteGenresSerializer, 403: 'error'},
+    tags=['Пользователь'],
 )
 @swagger_auto_schema(
     method='get',
     responses={200: FavoriteGenresSerializer, 403: 'error'},
+    tags=['Пользователь'],
 )
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])

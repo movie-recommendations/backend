@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -8,12 +10,20 @@ from api.serializers.compilations import (CompilationDetailSerializer,
 from movies.models.compilations import Compilation
 
 
+@method_decorator(name='get', decorator=swagger_auto_schema(
+    operation_description='Детальная выдача подборки',
+    tags=['Подборки'],
+))
 class CompilationSoloViewSet(RetrieveAPIView):
     permission_classes = (AllowAny,)
     queryset = Compilation.objects.all()
     serializer_class = CompilationDetailSerializer
 
 
+@method_decorator(name='list', decorator=swagger_auto_schema(
+    operation_description='Выдача списка подборок редакции',
+    tags=['Подборки'],
+))
 class CompilationRedactionListViewSet(
     ListModelMixin,
     GenericViewSet
@@ -27,6 +37,10 @@ class CompilationRedactionListViewSet(
         return new_queryset
 
 
+@method_decorator(name='list', decorator=swagger_auto_schema(
+    operation_description='Выдача списка избранных пользователем подборок',
+    tags=['Подборки'],
+))
 class CompilationFavoriteListViewSet(
     ListModelMixin,
     GenericViewSet
