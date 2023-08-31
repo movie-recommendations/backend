@@ -25,7 +25,7 @@ from movies.models import Movie, RatingMovie
 ))
 class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     queryset = Movie.objects.prefetch_related(
-        'genres', 'ratings', 'countries', 'favorite_for', 'need_to_see'
+        'genres', 'ratings', 'countries', 'favorite_for', 'need_to_see',
     )
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = MoviesFilter

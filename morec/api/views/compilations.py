@@ -16,7 +16,12 @@ from movies.models.compilations import Compilation
 ))
 class CompilationSoloViewSet(RetrieveAPIView):
     permission_classes = (AllowAny,)
-    queryset = Compilation.objects.all()
+    queryset = Compilation.objects.prefetch_related(
+        'movies',
+        'movies__genres',
+        'movies__need_to_see',
+        'movies__favorite_for',
+    )
     serializer_class = CompilationDetailSerializer
 
 
@@ -32,8 +37,12 @@ class CompilationRedactionListViewSet(
     serializer_class = CompilationListSerializer
 
     def get_queryset(self):
-        new_queryset = Compilation.objects.filter(
-            from_redaction=True).order_by('-date_created')
+        new_queryset = Compilation.objects.prefetch_related(
+            'movies',
+            'movies__genres',
+            'movies__need_to_see',
+            'movies__favorite_for',
+        ).filter(from_redaction=True).order_by('-date_created')
         return new_queryset
 
 
