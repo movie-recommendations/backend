@@ -25,7 +25,7 @@ from movies.models import Movie, RatingMovie
 ))
 class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     queryset = Movie.objects.prefetch_related(
-        'genres', 'ratings', 'countries', 'favorite_for'
+        'genres', 'ratings', 'countries', 'favorite_for', 'need_to_see'
     )
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = MoviesFilter
@@ -250,5 +250,5 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     )
     @action(detail=False, filter_backends=())
     def movies_of_the_day(self, request):
-        queryset = self.get_queryset().order_by('view_count')[:5]
+        queryset = self.get_queryset().order_by('-view_count')[:5]
         return Response(self.get_serializer(queryset, many=True).data)
