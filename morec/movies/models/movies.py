@@ -86,6 +86,7 @@ class Movie(models.Model, ImageDeleteMixin):
         related_name='need_see_movies',
     )
     trailer_link = models.TextField()
+    link_for_watch = models.TextField(blank=True)
 
     class Meta:
         ordering = ('rate_imdb', 'title')

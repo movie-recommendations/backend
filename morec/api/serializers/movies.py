@@ -88,6 +88,7 @@ class MoviesDetailSerializer(
             'is_need_see',
             'trailer_link',
             'user_rate',
+            'link_for_watch',
         )
 
     @swagger_serializer_method(serializer_or_field=serializers.FloatField)
