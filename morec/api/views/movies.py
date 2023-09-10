@@ -14,6 +14,7 @@ from rest_framework.viewsets import GenericViewSet
 from api.filters import MoviesFilter
 from api.serializers.movies import (MovieRateSerializer,
                                     MoviesDetailSerializer,
+                                    MoviesFavoritsAndWatchlistSerializer,
                                     MoviesListSerializer,
                                     MoviesOfDaySerializer)
 from movies.models import Movie, RatingMovie
@@ -36,8 +37,8 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
         'newest': MoviesListSerializer,
         'rated': MoviesListSerializer,
         'rate': MovieRateSerializer,
-        'favorites': MoviesListSerializer,
-        'watchlist': MoviesListSerializer,
+        'favorites': MoviesFavoritsAndWatchlistSerializer,
+        'watchlist': MoviesFavoritsAndWatchlistSerializer,
         'recomendations': MoviesListSerializer,
         'movies_of_the_day': MoviesOfDaySerializer,
     }
