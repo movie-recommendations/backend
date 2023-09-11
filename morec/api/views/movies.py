@@ -242,7 +242,9 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     )
     def recomendations(self, request):
         user = request.user
-        queryset = self.get_queryset().filter(genres__in=user.fav_genres.all())
+        queryset = self.get_queryset().filter(
+            genres__in=user.fav_genres.all()
+        ).distinct()
         return Response(self.get_serializer(queryset, many=True).data)
 
     @swagger_auto_schema(
