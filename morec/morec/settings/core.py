@@ -26,6 +26,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://80.87.109.33',
     'http://80.87.109.84',
     'http://80.87.109.234',
+    'http://bugaton1.acceleratorpracticum.ru',
+    'http://bugaton2.acceleratorpracticum.ru',
+    'http://bugaton3.acceleratorpracticum.ru',
+    'http://bugaton4.acceleratorpracticum.ru',
+    'http://bugaton5.acceleratorpracticum.ru',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -37,6 +42,11 @@ CSRF_TRUSTED_ORIGINS = [
     'http://80.87.109.33',
     'http://80.87.109.84',
     'http://80.87.109.234',
+    'http://bugaton1.acceleratorpracticum.ru',
+    'http://bugaton2.acceleratorpracticum.ru',
+    'http://bugaton3.acceleratorpracticum.ru',
+    'http://bugaton4.acceleratorpracticum.ru',
+    'http://bugaton5.acceleratorpracticum.ru',
 ]
 # Application definition
 
