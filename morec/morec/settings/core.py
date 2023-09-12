@@ -21,12 +21,22 @@ CORS_ALLOWED_ORIGINS = [
     'http://kinotochka.acceleratorpracticum.ru',
     'http://localhost:3000',
     'http://localhost:8000',
+    'http://80.87.109.211',
+    'http://80.87.109.242',
+    'http://80.87.109.33',
+    'http://80.87.109.84',
+    'http://80.87.109.234',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://kinotochka.acceleratorpracticum.ru',
     'http://localhost:3000',
     'http://localhost:8000',
+    'http://80.87.109.211',
+    'http://80.87.109.242',
+    'http://80.87.109.33',
+    'http://80.87.109.84',
+    'http://80.87.109.234',
 ]
 # Application definition
 
@@ -41,6 +51,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'django_filters',
+    'import_export',
 ]
 
 PROJECT_APPS = [
@@ -65,10 +76,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'morec.urls'
 
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

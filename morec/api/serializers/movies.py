@@ -53,6 +53,21 @@ class MoviesListSerializer(
         return obj.premiere_date.year
 
 
+class MoviesFavoritsAndWatchlistSerializer(MoviesListSerializer):
+    class Meta:
+        model = Movie
+        fields = (
+            'id',
+            'title',
+            'h_picture',
+            'rating',
+            'year',
+            'genres',
+            'is_favorite',
+            'is_need_see',
+        )
+
+
 class MoviesDetailSerializer(
     RateInMovieMixin,
     IsFavoriteMixin,

@@ -1,20 +1,34 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
 from .forms import GenreForm
-from .models import (Actor, Category, Compilation, Country, Director, Genre,
-                     Movie)
+from .models import (
+    Actor,
+    Category,
+    Compilation,
+    Country,
+    Director,
+    Genre,
+    Movie,
+)
+
+
+class MovieResource(resources.ModelResource):
+    class Meta:
+        model = Movie
+
+
+class MovieAdmin(ImportExportModelAdmin):
+    resource_classes = [MovieResource]
+    list_display = ('title', 'age_limit', 'categories', 'premiere_date')
+    exclude = ('favorite_for', 'need_to_see', 'view_count', 'rating_avg')
+    filter_horizontal = ('actors', 'directors', 'genres', 'countries')
 
 
 @admin.register(Compilation)
 class CompilationAdmin(admin.ModelAdmin):
     list_display = ('title', 'description', 'author')
-
-
-@admin.register(Movie)
-class MovieAdmin(admin.ModelAdmin):
-    list_display = ('title', 'age_limit', 'categories', 'premiere_date')
-    exclude = ('favorite_for', 'need_to_see', 'view_count', 'rating_avg')
-    filter_horizontal = ('actors', 'directors', 'genres', 'countries')
 
 
 @admin.register(Actor)
@@ -35,3 +49,4 @@ class GenreAdmin(admin.ModelAdmin):
 
 admin.site.register(Country)
 admin.site.register(Category)
+admin.site.register(Movie, MovieAdmin)

@@ -7,12 +7,12 @@ from morec.celery import app
 @app.task()
 def send_email(
         subject,
-        message,
         recipient_list,
         from_email=settings.EMAIL_HOST_USER,
         fail_silently=False,
         connection=None,
         html_message=None,
+        message=None,
 ):
 
     send_mail(

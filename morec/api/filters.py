@@ -64,6 +64,14 @@ class MoviesFilter(filters.FilterSet):
         field_name='premiere_date',
         lookup_expr='year__lte',
     )
+    imdb_rate_gt = filters.NumberFilter(
+        field_name='rate_imdb',
+        lookup_expr='gte',
+    )
+    kinopoisk_rate_gt = filters.NumberFilter(
+        field_name='rate_kinopoisk',
+        lookup_expr='gte',
+    )
 
     class Meta:
         model = Movie
