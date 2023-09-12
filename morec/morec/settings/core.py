@@ -21,12 +21,22 @@ CORS_ALLOWED_ORIGINS = [
     'http://kinotochka.acceleratorpracticum.ru',
     'http://localhost:3000',
     'http://localhost:8000',
+    'http://80.87.109.211',
+    'http://80.87.109.242',
+    'http://80.87.109.33',
+    'http://80.87.109.84',
+    'http://80.87.109.234',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://kinotochka.acceleratorpracticum.ru',
     'http://localhost:3000',
     'http://localhost:8000',
+    'http://80.87.109.211',
+    'http://80.87.109.242',
+    'http://80.87.109.33',
+    'http://80.87.109.84',
+    'http://80.87.109.234',
 ]
 # Application definition
 
