@@ -55,4 +55,8 @@ jobs:
           echo EMAIL_HOST_USER=${{ secrets.EMAIL_HOST_USER }} >> devops.env
           echo EMAIL_HOST_PASSWORD=${{ secrets.EMAIL_HOST_PASSWORD }} >> devops.env
           echo SITE_NAME=${{ secrets.SITE_NAME }} >> devops.env
+          echo SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=${{ secrets.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY }} >> devops.env
+          echo SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=${{ secrets.SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET }} >> devops.env
+          echo SOCIAL_AUTH_YANDEX_OAUTH2_KEY=${{ secrets.SOCIAL_AUTH_YANDEX_OAUTH2_KEY }} >> devops.env
+          echo SOCIAL_AUTH_YANDEX_OAUTH2_SECRET=${{ secrets.SOCIAL_AUTH_YANDEX_OAUTH2_SECRET }} >> devops.env
           sudo docker compose up -d
