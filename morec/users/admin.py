@@ -14,9 +14,17 @@ class UserResource(resources.ModelResource):
         column_name='fav_genres',
         widget=widgets.ManyToManyWidget(Genre, field='title', separator=' '),
     )
+    fav_genres_id = fields.Field(
+        attribute='fav_genres',
+        column_name='fav_genres',
+        widget=widgets.ManyToManyWidget(Genre, field='id', separator=' '),
+    )
 
     class Meta:
-        fields = ('sex', 'date_of_birth', 'fav_genres')
+        fields = ('id', 'sex', 'date_of_birth', 'fav_genres', 'fav_genres_id')
+        export_order = (
+            'id', 'sex', 'date_of_birth', 'fav_genres', 'fav_genres_id'
+        )
         model = User
 
     def dehydrate_date_of_birth(self, obj):
