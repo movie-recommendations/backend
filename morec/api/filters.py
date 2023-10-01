@@ -68,9 +68,9 @@ class MoviesFilter(filters.FilterSet):
         field_name='rate_imdb',
         lookup_expr='gte',
     )
-    kinopoisk_rate_gt = filters.NumberFilter(
-        field_name='rate_kinopoisk',
-        lookup_expr='gte',
+    imdb_rate_lt = filters.NumberFilter(
+        field_name='rate_imdb',
+        lookup_expr='lte',
     )
 
     class Meta:
