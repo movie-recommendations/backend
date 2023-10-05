@@ -33,6 +33,9 @@ class MoviesListSerializer(
 ):
     year = serializers.SerializerMethodField()
     genres = serializers.StringRelatedField(many=True)
+    countries = CountryInMovieSerializer(many=True)
+    actors = serializers.StringRelatedField(many=True)
+    directors = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Movie
@@ -44,6 +47,9 @@ class MoviesListSerializer(
             'rating',
             'year',
             'genres',
+            'actors',
+            'directors',
+            'countries',
             'is_favorite',
             'is_need_see',
         )
