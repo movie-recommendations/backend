@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from morec.settings import JWT_ACCESS_TTL, SECRET_KEY
-from users.models import User
+from users.models import Avatar, User
 
 
 class UserVerifyEmailSerializer(serializers.ModelSerializer):
@@ -101,7 +101,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username', 'date_of_birth', 'sex', 'fav_genres')
+        fields = ('email', 'username', 'date_of_birth', 'sex', 'fav_genres', 'avatar')
         read_only_fields = ('fav_genres', 'email')
 
 
@@ -111,3 +111,11 @@ class FavoriteGenresSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('fav_genres',)
+
+
+class AvatarSerializer(serializers.Serializer):
+    """Сериализатор для аватарок пользователей."""
+
+    class Meta:
+        model = Avatar
+        fields = ('id', 'avatar')
