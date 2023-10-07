@@ -5,7 +5,7 @@ from import_export import fields, resources, widgets
 from import_export.admin import ImportExportModelAdmin
 
 from movies.models import Genre
-from users.models import User
+from users.models import Avatar, User
 
 
 class UserResource(resources.ModelResource):
@@ -42,6 +42,11 @@ class UserResource(resources.ModelResource):
         return 'Male' if obj.sex == 0 else 'Female' if obj.sex == 1 else ''
 
 
+class AvatarResource(resources.ModelResource):
+    class Meta:
+        model = Avatar
+
+
 class UserFavGenre(admin.TabularInline):
     model = Genre.favorite.through
 
@@ -53,4 +58,10 @@ class UserAdmin(ImportExportModelAdmin):
     inlines = [UserFavGenre, ]
 
 
+class AvatarAdmin(ImportExportModelAdmin):
+    resource_classes = (AvatarResource, )
+    list_display = ('avatar', )
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Avatar, AvatarAdmin)
