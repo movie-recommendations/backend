@@ -11,7 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.authentication.mail import sending_mail
-from api.serializers.users import (ChangePasswordSerializer,
+from api.serializers.users import (AvatarSerializer,
+                                   ChangePasswordSerializer,
                                    CustomUserCreateSerializer,
                                    CustomUserSerializer,
                                    FavoriteGenresSerializer, LoginSerializer,
@@ -20,7 +21,7 @@ from api.serializers.users import (ChangePasswordSerializer,
 from api.tasks import send_email
 from morec.settings import (EMAIL_HOST_USER, JWT_REGISTRATION_TTL, SECRET_KEY,
                             SITE_NAME)
-from users.models import User
+from users.models import Avatar, User
 
 
 @swagger_auto_schema(
@@ -190,4 +191,18 @@ def favorite_genres(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     serializer = FavoriteGenresSerializer(user)
+    return Response(serializer.data)
+
+
+@swagger_auto_schema(
+    method='get',
+    responses={200: AvatarSerializer, 403: 'error'},
+    tags=['Пользователь'],
+)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def avatars(request):
+    user = request.user
+    avatars = Avatar.objects.all()
+    serializer = AvatarSerializer(avatars, many=True)
     return Response(serializer.data)
