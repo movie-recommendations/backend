@@ -42,11 +42,6 @@ class UserResource(resources.ModelResource):
         return 'Male' if obj.sex == 0 else 'Female' if obj.sex == 1 else ''
 
 
-class AvatarResource(resources.ModelResource):
-    class Meta:
-        model = Avatar
-
-
 class UserFavGenre(admin.TabularInline):
     model = Genre.favorite.through
 
@@ -58,10 +53,9 @@ class UserAdmin(ImportExportModelAdmin):
     inlines = [UserFavGenre, ]
 
 
-class AvatarAdmin(ImportExportModelAdmin):
-    resource_classes = (AvatarResource, )
-    list_display = ('avatar', )
+@admin.register(Avatar)
+class AvatarAdmin(admin.ModelAdmin):
+    pass
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(Avatar, AvatarAdmin)
