@@ -202,7 +202,6 @@ def favorite_genres(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def avatars(request):
-    user = request.user
     avatars = Avatar.objects.all()
     serializer = AvatarSerializer(avatars, many=True)
     return Response(serializer.data)

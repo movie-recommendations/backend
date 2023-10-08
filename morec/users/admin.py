@@ -5,7 +5,7 @@ from import_export import fields, resources, widgets
 from import_export.admin import ImportExportModelAdmin
 
 from movies.models import Genre
-from users.models import User
+from users.models import Avatar, User
 
 
 class UserResource(resources.ModelResource):
@@ -51,6 +51,11 @@ class UserAdmin(ImportExportModelAdmin):
     list_display = ('email', )
     list_filter = ('email', )
     inlines = [UserFavGenre, ]
+
+
+@admin.register(Avatar)
+class AvatarAdmin(admin.ModelAdmin):
+    pass
 
 
 admin.site.register(User, UserAdmin)

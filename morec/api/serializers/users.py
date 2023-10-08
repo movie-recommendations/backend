@@ -113,7 +113,7 @@ class FavoriteGenresSerializer(serializers.ModelSerializer):
         fields = ('fav_genres',)
 
 
-class AvatarSerializer(serializers.Serializer):
+class AvatarSerializer(serializers.ModelSerializer):
     """Сериализатор для аватарок пользователей."""
 
     class Meta:
