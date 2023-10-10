@@ -5,6 +5,7 @@ from import_export import fields, resources, widgets
 from import_export.admin import ImportExportModelAdmin
 
 from movies.models import Genre
+from users.forms import AvatarForm
 from users.models import Avatar, User
 
 
@@ -55,7 +56,7 @@ class UserAdmin(ImportExportModelAdmin):
 
 @admin.register(Avatar)
 class AvatarAdmin(admin.ModelAdmin):
-    pass
+    form = AvatarForm
 
 
 admin.site.register(User, UserAdmin)
