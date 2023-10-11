@@ -11,12 +11,13 @@ from .views.countries import CountryViewSet
 from .views.directors import DirectorViewSet
 from .views.genres import GenreViewSet
 from .views.movies import MoviesViewSet
-from .views.users import (UsersMe, avatars, favorite_genres, login,
+from .views.users import (AvatarViewSet, UsersMe, favorite_genres, login,
                           password_recovery, update_password,
                           user_create_activate, user_registration,
                           user_verify_email)
 
 v1_router = DefaultRouter()
+v1_router.register('avatars', AvatarViewSet)
 v1_router.register('movies', MoviesViewSet)
 v1_router.register('categories', CategoryViewSet)
 v1_router.register('genres', GenreViewSet)
@@ -41,7 +42,6 @@ urlpatterns = [
     path('v1/auth/login/', login),
     path('v1/auth/password-recovery/', password_recovery),
     path('v1/auth/reset-password/', update_password),
-    path('v1/avatars/', avatars),
     path('v1/users-me/', UsersMe.as_view()),
     path('v1/users/favorite-genres/', favorite_genres),
     path('docs/', include(docs_urlpatterns)),
