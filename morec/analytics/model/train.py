@@ -273,7 +273,7 @@ def net(learning_rate=0.001,
 
 def train(model, X, y, batch_size=100, epochs=100, validation_split=.2, verbose=1):
 
-    checkpoint = ModelCheckpoint("net.h5", save_best_only=True)
+    checkpoint = ModelCheckpoint("analytics/model/net.h5", save_best_only=True)
 
     model.fit(
         X,
@@ -304,15 +304,15 @@ if __name__ == '__main__':
         layer6_activation=LeakyReLU(alpha=.2))
 
     temporary_data = [
-        'User-2023-10-07.csv',
-        'Movie-2023-10-08.csv',
-        'RatingMovie-2023-10-07.csv'
+        'analytics/model/User-2023-10-07.csv',
+        'analytics/model/Movie-2023-10-08.csv',
+        'analytics/model/RatingMovie-2023-10-07.csv'
     ]
 
     train_data = prepare_data(
-        f'.\cached_data\{temporary_data[0]}',
-        f'.\cached_data\{temporary_data[1]}',
-        f'.\cached_data\{temporary_data[2]}'
+        f'.\analytics\model\cached_data\{temporary_data[0]}',
+        f'.\analytics\model\cached_data\{temporary_data[1]}',
+        f'.\analytics\model\cached_data\{temporary_data[2]}'
     )
 
     train(

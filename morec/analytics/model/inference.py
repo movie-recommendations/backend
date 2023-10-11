@@ -168,24 +168,3 @@ def get_inference(data, raw=False) -> list:
         one_user_results_sampler = pd.read_csv('.\\analytics\\model\\cached_data\\dflt_movies.csv').sample(n=10)
 
     return one_user_results_sampler['movie_id'].tolist()
-
-# app = FastAPI()
-
-
-
-# @app.get("/connect/")
-# def get_forecast(user_id: str):
-#     if len(user_id) != 36:
-#         raise HTTPException(
-#             status_code=400,
-#             detail="Проверьте идентификатор пользователя (должно быть 36 символов)"
-#         )
-
-
-#     inference = get_inference(
-#         user_processing(
-#             user_id
-#         )
-#     )
-
-#     return {"response": inference}
