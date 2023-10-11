@@ -7,8 +7,10 @@ from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from api.authentication.mail import sending_mail
 from api.serializers.users import (AvatarSerializer,
@@ -194,14 +196,10 @@ def favorite_genres(request):
     return Response(serializer.data)
 
 
-@swagger_auto_schema(
-    method='get',
-    responses={200: AvatarSerializer, 403: 'error'},
+@method_decorator(name='list', decorator=swagger_auto_schema(
+    operation_description='Выдача аватаров',
     tags=['Пользователь'],
-)
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def avatars(request):
-    avatars = Avatar.objects.all()
-    serializer = AvatarSerializer(avatars, many=True)
-    return Response(serializer.data)
+))
+class AvatarViewSet(ListModelMixin, GenericViewSet):
+    queryset = Avatar.objects.all()
+    serializer_class = AvatarSerializer
