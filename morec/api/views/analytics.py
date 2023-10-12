@@ -15,3 +15,4 @@ def get_forecast(request):
     )
 
     return Response(inference)
+

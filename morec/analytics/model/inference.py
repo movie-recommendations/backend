@@ -1,12 +1,49 @@
-from analytics.model.kinotochka_helpers import data_metrics
+import re
+import json
+
+# from analytics.model.kinotochka_helpers import data_metrics
 import pandas as pd
 import numpy as np
 
 import joblib
 from keras.models import load_model
+from sklearn.base import BaseEstimator, TransformerMixin
+
+
+class AddOne(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return X + 1
+
+
+class StringToList(BaseEstimator, TransformerMixin):
+    def fit(self, X, y=None):
+        self.input_features_ = X.columns
+        return self
+
+    def transform(self, X, y=None):
+        return X.map(self.string_to_list)
+
+    def string_to_list(self, x):
+        if pd.isna(x):
+            return x
+        else:
+            return [int(n) for n in re.split(',\s*|\s+', x)]
+
+    def get_feature_names(self, input_features=None):
+        return self.input_features_
+
 
 def user_processing(test_user_slug, raw=False):
-    fitted_metrics = data_metrics(mode='load')
+
+    with open('analytics/model/data_metrics.json', 'r') as f:
+        fitted_metrics = json.load(f)
+
+    # # instead of
+    # fitted_metrics = data_metrics(mode='load')
+
     process1 = joblib.load('analytics/model/stage1preprocessor')
     process2 = joblib.load('analytics/model/stage2preprocessor')
 
@@ -66,24 +103,25 @@ def user_processing(test_user_slug, raw=False):
     if len(df_users[df_users['user'] == test_user_slug]) == 0:
         df_test_merged['date_of_birth'] = df_test_merged['date_of_birth'].fillna(0)
 
+
     fixed_test_data = pd.DataFrame(process1.transform(df_test_merged),
-                                   columns=[
-                                       'user',
-                                       'movie_id',
-                                       'genres',
-                                       'actors',
-                                       'favorited_genres',
-                                       'directors',
-                                       'countries',
-                                       'sex',
-                                       'date_of_birth',
-                                       'rate_imdb',
-                                       'rate_kinopoisk',
-                                       'duration_minutes',
-                                       'premiere_date',
-                                       'age_limit',
-                                       'rate'
-                                   ]
+                                       columns=[
+                                           'user',
+                                           'movie_id',
+                                           'genres',
+                                           'actors',
+                                           'favorited_genres',
+                                           'directors',
+                                           'countries',
+                                           'sex',
+                                           'date_of_birth',
+                                           'rate_imdb',
+                                           'rate_kinopoisk',
+                                           'duration_minutes',
+                                           'premiere_date',
+                                           'age_limit',
+                                           'rate'
+                                       ]
                                    )
 
     if len(fixed_test_data[fixed_test_data['rate'].isna()]) > 10:
@@ -151,7 +189,7 @@ def user_processing(test_user_slug, raw=False):
         return [arr.astype(np.float64) for arr in one_user_inputs], fixed_test_data['movie_id']
 
 
-def get_inference(data, raw=False) -> list:
+def get_inference(data) -> list:
     try:
         model = load_model('analytics/model/net.h5')
 

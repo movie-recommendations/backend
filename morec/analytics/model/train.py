@@ -71,7 +71,7 @@ def prepare_data(users_table, movies_table, ratings_table):
 
     fixed_data = pd.DataFrame(preprocessor_st1.transform(data), columns=new_columns_order_st1)
 
-    kh.data_metrics(fixed_data, mode='dump')
+    # kh.data_metrics(fixed_data, mode='dump')
 
     X_train = pd.DataFrame(preprocessor_st2.transform(fixed_data.drop('rate', axis=1)))
 
@@ -304,15 +304,17 @@ if __name__ == '__main__':
         layer6_activation=LeakyReLU(alpha=.2))
 
     temporary_data = [
-        'analytics/model/User-2023-10-07.csv',
-        'analytics/model/Movie-2023-10-08.csv',
-        'analytics/model/RatingMovie-2023-10-07.csv'
+        'User-2023-10-07.csv',
+        'Movie-2023-10-08.csv',
+        'RatingMovie-2023-10-07.csv'
     ]
 
+    pass_to_cached_data = '.\\analytics\model\cached_data\\'
+
     train_data = prepare_data(
-        f'.\analytics\model\cached_data\{temporary_data[0]}',
-        f'.\analytics\model\cached_data\{temporary_data[1]}',
-        f'.\analytics\model\cached_data\{temporary_data[2]}'
+        pass_to_cached_data + temporary_data[0],
+        pass_to_cached_data + temporary_data[1],
+        pass_to_cached_data + temporary_data[2]
     )
 
     train(
