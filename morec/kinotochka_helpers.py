@@ -46,14 +46,14 @@ def data_metrics(
         count = {'min': mins, 'max': maxs, 'n': ns, 'len': lens}
 
         if mode == 'dump' or mode == 'write':
-            with open('analytics/model/data_metrics.json', 'w') as f:
+            with open('morec/analytics/model/data_metrics.json', 'w') as f:
                 json.dump(count, f)
 
         else:
             return count
 
     elif mode == 'read' or mode == 'load':
-        with open('analytics/model/data_metrics.json', 'r') as f:
+        with open('morec/analytics/model/data_metrics.json', 'r') as f:
             loaded_data = json.load(f)
 
         return loaded_data

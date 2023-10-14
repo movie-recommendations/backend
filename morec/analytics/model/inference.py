@@ -7,26 +7,26 @@ from keras.models import load_model
 
 def user_processing(test_user_slug, raw=False):
     fitted_metrics = data_metrics(mode='load')
-    process1 = joblib.load('analytics/model/stage1preprocessor')
-    process2 = joblib.load('analytics/model/stage2preprocessor')
+    process1 = joblib.load('morec/analytics/model/stage1preprocessor')
+    process2 = joblib.load('morec/analytics/model/stage2preprocessor')
 
     # loading datasets must be switched to database cons
     df_users = (pd.read_csv(
-            '.\\analytics\\model\\cached_data\\User-2023-10-07.csv'
+            '.\\morec\\analytics\\model\\cached_data\\User-2023-10-07.csv'
         ).rename(
             columns={'id': 'user', 'fav_genres.1': 'favorited_genres'}
         )
     )
 
     df_movies = (pd.read_csv(
-            '.\\analytics\\model\\cached_data\\Movie-2023-10-08.csv'
+            '.\\morec\\analytics\\model\\cached_data\\Movie-2023-10-08.csv'
         ).rename(
             columns={'id': 'movie_id'}
         )
     )
 
     df_ratings = (pd.read_csv(
-            '.\\analytics\\model\\cached_data\\RatingMovie-2023-10-07.csv'
+            '.\\morec\\analytics\\model\\cached_data\\RatingMovie-2023-10-07.csv'
         ).rename(
             columns={'id': 'rate_id', 'movie': 'movie_id'}
         )
@@ -153,7 +153,7 @@ def user_processing(test_user_slug, raw=False):
 
 def get_inference(data, raw=False) -> list:
     try:
-        model = load_model('analytics/model/net.h5')
+        model = load_model('morec/analytics/model/net.h5')
 
         one_user_preds = model.predict(data[0]).flatten()
 
@@ -165,6 +165,6 @@ def get_inference(data, raw=False) -> list:
         one_user_results_sampler = one_user_results.sort_values('rate', ascending=False).head(20).sample(n=10)
 
     except:
-        one_user_results_sampler = pd.read_csv('.\\analytics\\model\\cached_data\\dflt_movies.csv').sample(n=10)
+        one_user_results_sampler = pd.read_csv('.\\morec\\analytics\\model\\cached_data\\dflt_movies.csv').sample(n=10)
 
     return one_user_results_sampler['movie_id'].tolist()
