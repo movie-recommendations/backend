@@ -2,7 +2,6 @@ import datetime
 
 import jwt
 from django.shortcuts import get_object_or_404, redirect
-from django.template.loader import get_template
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, status
@@ -55,14 +54,13 @@ def user_registration(request):
             JWT_REGISTRATION_TTL)}
         payload.update(serializer.data)
         encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-        context = {'SITE_NAME': SITE_NAME, 'encoded_jwt': encoded_jwt}
-        template = get_template(
-            'users/email/user_registration.html'
-        ).render(context)
+        message = ('Для завершения регистрации на сайте КиноТочка '
+                   'перейдите по ссылке: '
+                   f'{SITE_NAME}/api/v1/auth/activation/{encoded_jwt}/')
         subject = 'Активация аккаунта КиноТочка'
         recipient = serializer.data['email']
         send_email.delay(
-            subject, [recipient], EMAIL_HOST_USER, html_message=template
+            subject, [recipient], EMAIL_HOST_USER, message=message
         )
         return Response(status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
