@@ -10,10 +10,10 @@ dotenv_file = BASE_DIR.joinpath('.env')
 if dotenv_file.is_file():
     load_dotenv(dotenv_file)
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', default='1111111112')
 
 
-DEBUG = True if os.environ.get('DEBUG') == 'True' else False
+DEBUG = True #if os.environ.get('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
 
