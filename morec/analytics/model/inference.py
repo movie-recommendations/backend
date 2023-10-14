@@ -213,11 +213,23 @@ def get_inference(data) -> list:
 
         one_user_results_sampler = one_user_results.sort_values('rate', ascending=False).head(20).sample(n=10)
 
+        return_list = one_user_results_sampler['movie_id'].tolist()
+        if 0 in return_list:
+            try:
+                one_best_film = pd.read_csv(UTILITY_PATH + '.\\cached_data\\dflt_movies.csv').sample()['movie_id'].tolist()
+            except FileNotFoundError:
+                one_best_film = pd.read_csv('.\\cached_data\\dflt_movies.csv').sample()['movie_id'].tolist()
+            finally:
+                index = return_list.index(0)
+                return_list[index] = one_best_film[0]
+
+        return return_list
+
     except:
         try:
             one_user_results_sampler = pd.read_csv(UTILITY_PATH + '.\\cached_data\\dflt_movies.csv').sample(n=10)
         except FileNotFoundError:
             one_user_results_sampler = pd.read_csv('.\\cached_data\\dflt_movies.csv').sample(n=10)
 
-    return one_user_results_sampler['movie_id'].tolist()
+        return one_user_results_sampler['movie_id'].tolist()
 
