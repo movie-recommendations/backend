@@ -6,7 +6,7 @@ from analytics.model.inference import get_inference, user_processing
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_forecast(request):
+def get_movie_recommendations(request):
     user = request.user
     inference = get_inference(
         user_processing(
