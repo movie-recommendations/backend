@@ -45,7 +45,7 @@ urlpatterns = [
     path('v1/auth/reset-password/', update_password),
     path('v1/users-me/', UsersMe.as_view()),
     path('v1/users/favorite-genres/', favorite_genres),
-    path('v1/users/movie_recommendations/', get_movie_recommendations),
+    path('v1/users/special-for-you/', get_movie_recommendations),
     path('docs/', include(docs_urlpatterns)),
     path('v1/', include(v1_router.urls)),
 
