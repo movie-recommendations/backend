@@ -1,25 +1,18 @@
-import pandas as pd
-import numpy as np
-import joblib
 import json
 import re
 
+import joblib
+import numpy as np
+import pandas as pd
 import tensorflow as tf
-from tensorflow import random as tf_random
 from keras.callbacks import ModelCheckpoint
+from keras.layers import (BatchNormalization, Concatenate, Dense, Embedding,
+                          Flatten, Input, LeakyReLU)
 from keras.optimizers import Adam
-from keras.layers import (Embedding,
-                          Input,
-                          Flatten,
-                          Concatenate,
-                          BatchNormalization,
-                          LeakyReLU,
-                          Dense)
-
-from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, StandardScaler, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
+from tensorflow import random as tf_random
 
 RANDOM = 202309
 
@@ -54,34 +47,51 @@ def prepare_data(users_table, movies_table, ratings_table):
 
     cached_data_path = 'cached_data'
 
-    df_users = pd.read_csv(f'.\\{cached_data_path}\\{users_table}').rename(columns={'id': 'user', 'fav_genres.1': 'favorited_genres'})
-    df_movies = pd.read_csv(f'.\\{cached_data_path}\\{movies_table}').rename(columns={'id': 'movie_id'})
-    df_ratings = pd.read_csv(f'.\\{cached_data_path}\\{ratings_table}').rename(columns={'id': 'rate_id', 'movie': 'movie_id'})
+    df_users = pd.read_csv(
+        f'.\\{cached_data_path}\\{users_table}'
+    ).rename(columns={'id': 'user', 'fav_genres.1': 'favorited_genres'})
+    df_movies = pd.read_csv(
+        f'.\\{cached_data_path}\\{movies_table}'
+    ).rename(columns={'id': 'movie_id'})
+    df_ratings = pd.read_csv(
+        f'.\\{cached_data_path}\\{ratings_table}'
+    ).rename(columns={'id': 'rate_id', 'movie': 'movie_id'})
 
     initial_columns_order = [
-                    'user',
-                    'sex',
-                    'date_of_birth',
-                    'favorited_genres',
-                    'movie_id',
-                    'rate_imdb',
-                    'rate_kinopoisk',
-                    'duration_minutes',
-                    'premiere_date',
-                    'age_limit',
-                    'genres',
-                    'actors',
-                    'directors',
-                    'countries',
-                    'rate'
-                ]
+        'user',
+        'sex',
+        'date_of_birth',
+        'favorited_genres',
+        'movie_id',
+        'rate_imdb',
+        'rate_kinopoisk',
+        'duration_minutes',
+        'premiere_date',
+        'age_limit',
+        'genres',
+        'actors',
+        'directors',
+        'countries',
+        'rate',
+    ]
 
     new_columns_order_st1 = [
-            'user', 'movie_id', 'genres', 'actors', 'favorited_genres',
-            'directors', 'countries', 'sex', 'date_of_birth', 'rate_imdb',
-            'rate_kinopoisk', 'duration_minutes', 'premiere_date', 'age_limit', 'rate'
-        ]
-
+        'user',
+        'movie_id',
+        'genres',
+        'actors',
+        'favorited_genres',
+        'directors',
+        'countries',
+        'sex',
+        'date_of_birth',
+        'rate_imdb',
+        'rate_kinopoisk',
+        'duration_minutes',
+        'premiere_date',
+        'age_limit',
+        'rate',
+    ]
 
     data = (
         df_ratings
@@ -93,16 +103,28 @@ def prepare_data(users_table, movies_table, ratings_table):
     data['premiere_date'] = pd.to_datetime(data['premiere_date']).dt.year
     data['favorited_genres'] = data['favorited_genres'].fillna('0')
 
-    list_transform_columns = ['genres', 'actors', 'favorited_genres', 'directors', 'countries']
+    list_transform_columns = [
+        'genres',
+        'actors',
+        'favorited_genres',
+        'directors',
+        'countries',
+    ]
     ohe_encoding_columns = ['sex']
     id_columns = ['user', 'movie_id']
-    numerical_encoding_columns = ['date_of_birth', 'rate_imdb', 'rate_kinopoisk', 'duration_minutes', 'age_limit',
-                                  'premiere_date']
+    numerical_encoding_columns = [
+        'date_of_birth',
+        'rate_imdb',
+        'rate_kinopoisk',
+        'duration_minutes',
+        'age_limit',
+        'premiere_date',
+    ]
 
     # Применяем нашу функцию предобработки к данным
-    ############################
-    ############################
-    preprocessor_st1 = OrdinalEncoder(unknown_value=-1, handle_unknown='use_encoded_value')
+    preprocessor_st1 = OrdinalEncoder(
+        unknown_value=-1, handle_unknown='use_encoded_value'
+    )
     data[id_columns] = preprocessor_st1.fit_transform(data[id_columns])
 
     # Применение AddOne
@@ -112,17 +134,27 @@ def prepare_data(users_table, movies_table, ratings_table):
     # Применение StringToList
     stl = StringToList()
     stl.fit(data[list_transform_columns])
-    data[list_transform_columns] = data[list_transform_columns].apply(stl.transform)
+    data[list_transform_columns] = data[
+        list_transform_columns
+    ].apply(stl.transform)
 
     # Преобразовываем data в DataFrame с нужным порядком столбцов
     fixed_data = data[new_columns_order_st1]
 
     preprocessor_st2 = ColumnTransformer(
-            transformers=[
-                ('ohe_features', OneHotEncoder(sparse=False, drop='first'), ohe_encoding_columns),
-                ('numerical_features', MinMaxScaler(), numerical_encoding_columns),
-            ],
-            remainder='passthrough'
+        transformers=[
+            (
+                'ohe_features',
+                OneHotEncoder(sparse=False, drop='first'),
+                ohe_encoding_columns
+            ),
+            (
+                'numerical_features',
+                MinMaxScaler(),
+                numerical_encoding_columns
+            ),
+        ],
+        remainder='passthrough'
         )
 
     preprocessor_st2.fit(fixed_data.drop('rate', axis=1))
@@ -132,27 +164,27 @@ def prepare_data(users_table, movies_table, ratings_table):
     ns = {}
     lens = {}
     for i in [
-            'user',
-            'movie_id',
-            'genres',
-            'actors',
-            'favorited_genres',
-            'directors',
-            'countries'
-        ]:
+        'user',
+        'movie_id',
+        'genres',
+        'actors',
+        'favorited_genres',
+        'directors',
+        'countries'
+    ]:
         try:
             mins[i] = min(fixed_data[i].apply(lambda x: min(x)))
             maxs[i] = max(fixed_data[i].apply(lambda x: max(x)))
             lens[i] = max(fixed_data[i].apply(len))
-
         except:
             mins[i] = min(fixed_data[i].tolist())
             maxs[i] = max(fixed_data[i].tolist())
 
     data_metrics_json = {'min': mins, 'max': maxs, 'n': ns, 'len': lens}
 
-    X_train = pd.DataFrame(preprocessor_st2.transform(fixed_data.drop('rate', axis=1)))
-
+    X_train = pd.DataFrame(preprocessor_st2.transform(
+        fixed_data.drop('rate', axis=1))
+    )
 
     train_input_user = np.array(X_train[8].astype(int))
     train_input_movie = np.array(X_train[9].astype(int))
@@ -167,27 +199,38 @@ def prepare_data(users_table, movies_table, ratings_table):
 
     train_input_genres = np.array(
         X_train[10].apply(
-            lambda x: x + [0] * (data_metrics_json['len']['genres'] - len(x))).values.tolist()
+            lambda x: x + [0] * (data_metrics_json['len']['genres'] - len(x))
+        ).values.tolist()
     )
 
     train_input_actors = np.array(
         X_train[11].apply(
-            lambda x: x + [0] * (data_metrics_json['len']['actors'] - len(x))).values.tolist()
+            lambda x: x + [0] * (data_metrics_json['len']['actors'] - len(x))
+        ).values.tolist()
     )
 
     train_input_favorited_genres = np.array(
         X_train[12].apply(
-            lambda x: x + [0] * (data_metrics_json['len']['favorited_genres'] - len(x))).values.tolist()
+            lambda x: x + [0] * (
+                data_metrics_json['len']['favorited_genres'] - len(x)
+            )
+        ).values.tolist()
     )
 
     train_input_directors = np.array(
         X_train[13].apply(
-            lambda x: x + [0] * (data_metrics_json['len']['directors'] - len(x))).values.tolist()
+            lambda x: x + [0] * (
+                data_metrics_json['len']['directors'] - len(x)
+            )
+        ).values.tolist()
     )
 
     train_input_countries = np.array(
         X_train[14].apply(
-            lambda x: x + [0] * (data_metrics_json['len']['countries'] - len(x))).values.tolist()
+            lambda x: x + [0] * (
+                data_metrics_json['len']['countries'] - len(x)
+            )
+        ).values.tolist()
     )
 
     train_inputs = [
@@ -266,46 +309,83 @@ def net(
     layer_age_limit = Input(shape=[1], name='age_limit')
     layer_year = Input(shape=[1], name='year')
 
-    layer_genres = Input(shape=[data_metrics_json['len']['genres']], name='genres')
-    layer_actors = Input(shape=[data_metrics_json['len']['actors']], name='actors')
-    layer_favorites = Input(shape=[data_metrics_json['len']['favorited_genres']], name='favorites')
-    layer_directors = Input(shape=[data_metrics_json['len']['directors']], name='directors')
-    layer_countries = Input(shape=[data_metrics_json['len']['countries']], name='countries')
+    layer_genres = Input(
+        shape=[data_metrics_json['len']['genres']], name='genres'
+    )
+    layer_actors = Input(
+        shape=[data_metrics_json['len']['actors']], name='actors'
+    )
+    layer_favorites = Input(
+        shape=[data_metrics_json['len']['favorited_genres']], name='favorites'
+    )
+    layer_directors = Input(
+        shape=[data_metrics_json['len']['directors']], name='directors'
+    )
+    layer_countries = Input(
+        shape=[data_metrics_json['len']['countries']], name='countries'
+    )
 
     # Эмбеддинги для id пользователей
-    user_embedding = Embedding(output_dim=10, input_dim=int(data_metrics_json['max']['user']) + 5, input_length=1,
-                               name='user_embedding')(layer_user_id)
+    user_embedding = Embedding(
+        output_dim=10,
+        input_dim=int(data_metrics_json['max']['user']) + 5,
+        input_length=1,
+        name='user_embedding'
+    )(layer_user_id)
     user_embedding = Flatten()(user_embedding)
 
     # Эмбеддинги для id фильмов
-    movie_embedding = Embedding(output_dim=10, input_dim=int(data_metrics_json['max']['movie_id']) + 5, input_length=1,
-                                name='movie_embedding')(layer_movie_id)
+    movie_embedding = Embedding(
+        output_dim=10,
+        input_dim=int(data_metrics_json['max']['movie_id']) + 5,
+        input_length=1,
+        name='movie_embedding'
+    )(layer_movie_id)
     movie_embedding = Flatten()(movie_embedding)
 
     # Эмбеддинги для списочных id жанров
-    genres_embedding = Embedding(output_dim=5, input_dim=data_metrics_json['max']['genres'] + 1,
-                                 input_length=data_metrics_json['len']['genres'], mask_zero=True)(layer_genres)
+    genres_embedding = Embedding(
+        output_dim=5,
+        input_dim=data_metrics_json['max']['genres'] + 1,
+        input_length=data_metrics_json['len']['genres'],
+        mask_zero=True
+    )(layer_genres)
     genres_embedding = Flatten()(genres_embedding)
 
     # Эмбеддинги для списочных id актеров
-    actors_embedding = Embedding(output_dim=5, input_dim=data_metrics_json['max']['actors'] + 10,
-                                 input_length=data_metrics_json['len']['actors'], mask_zero=True)(layer_actors)
+    actors_embedding = Embedding(
+        output_dim=5,
+        input_dim=data_metrics_json['max']['actors'] + 10,
+        input_length=data_metrics_json['len']['actors'],
+        mask_zero=True
+    )(layer_actors)
     actors_embedding = Flatten()(actors_embedding)
 
     # Эмбеддинги для списочных id любимых жанров пользователя
-    favorites_embedding = Embedding(output_dim=5, input_dim=data_metrics_json['max']['favorited_genres'] + 1,
-                                    input_length=data_metrics_json['len']['favorited_genres'], mask_zero=True)(
-        layer_favorites)
+    favorites_embedding = Embedding(
+        output_dim=5,
+        input_dim=data_metrics_json['max']['favorited_genres'] + 1,
+        input_length=data_metrics_json['len']['favorited_genres'],
+        mask_zero=True
+    )(layer_favorites)
     favorites_embedding = Flatten()(favorites_embedding)
 
     # Эмбеддинги для списочных id режиссеров
-    directors_embedding = Embedding(output_dim=5, input_dim=data_metrics_json['max']['directors'] + 5,
-                                    input_length=data_metrics_json['len']['directors'], mask_zero=True)(layer_directors)
+    directors_embedding = Embedding(
+        output_dim=5,
+        input_dim=data_metrics_json['max']['directors'] + 5,
+        input_length=data_metrics_json['len']['directors'],
+        mask_zero=True
+    )(layer_directors)
     directors_embedding = Flatten()(directors_embedding)
 
     # Эмбеддинги для списочных id стран
-    countries_embedding = Embedding(output_dim=5, input_dim=data_metrics_json['max']['countries'] + 1,
-                                    input_length=data_metrics_json['len']['countries'], mask_zero=True)(layer_countries)
+    countries_embedding = Embedding(
+        output_dim=5,
+        input_dim=data_metrics_json['max']['countries'] + 1,
+        input_length=data_metrics_json['len']['countries'],
+        mask_zero=True
+    )(layer_countries)
     countries_embedding = Flatten()(countries_embedding)
 
     # Объединение всех эмбеддингов
@@ -331,28 +411,52 @@ def net(
 
     # Полносвязные слои
     x = BatchNormalization()(x)
-    x = Dense(layer1_units, activation=layer1_activation, kernel_initializer='he_normal')(x)
+    x = Dense(
+        layer1_units,
+        activation=layer1_activation,
+        kernel_initializer='he_normal'
+    )(x)
 
     x = BatchNormalization()(x)
-    x = Dense(layer2_units, activation=layer2_activation, kernel_initializer='he_normal')(x)
+    x = Dense(
+        layer2_units,
+        activation=layer2_activation,
+        kernel_initializer='he_normal'
+    )(x)
 
     # Ниже второго слои создаются если в аргументах указано количество нейронов
     # в обратном случае остается 2 полносвязных слоя
     if layer3_units:
         x = BatchNormalization()(x)
-        x = Dense(layer3_units, activation=layer3_activation, kernel_initializer='he_normal')(x)
+        x = Dense(
+            layer3_units,
+            activation=layer3_activation,
+            kernel_initializer='he_normal'
+        )(x)
 
     if layer4_units:
         x = BatchNormalization()(x)
-        x = Dense(layer4_units, activation=layer4_activation, kernel_initializer='he_normal')(x)
+        x = Dense(
+            layer4_units,
+            activation=layer4_activation,
+            kernel_initializer='he_normal'
+        )(x)
 
     if layer5_units:
         x = BatchNormalization()(x)
-        x = Dense(layer5_units, activation=layer5_activation, kernel_initializer='he_normal')(x)
+        x = Dense(
+            layer5_units,
+            activation=layer5_activation,
+            kernel_initializer='he_normal'
+        )(x)
 
     if layer6_units:
         x = BatchNormalization()(x)
-        x = Dense(layer6_units, activation=layer6_activation, kernel_initializer='he_normal')(x)
+        x = Dense(
+            layer6_units,
+            activation=layer6_activation,
+            kernel_initializer='he_normal'
+        )(x)
 
     # Выходной слой
     output = Dense(1, activation='linear')(x)
@@ -377,12 +481,18 @@ def net(
             layer_countries
         ], outputs=output
     )
-    model.compile(optimizer=optimizer, loss=loss, metrics=['mean_absolute_error'])
+    model.compile(
+        optimizer=optimizer,
+        loss=loss,
+        metrics=['mean_absolute_error']
+    )
 
     return model
 
 
-def train(model, X, y, batch_size=100, epochs=100, validation_split=.2, verbose=0):
+def train(
+        model, X, y, batch_size=100, epochs=100, validation_split=.2, verbose=0
+):
     """
     Функция обучает нейросеть
 
@@ -415,8 +525,8 @@ def train(model, X, y, batch_size=100, epochs=100, validation_split=.2, verbose=
 
     return {'model': model, 'history': history}
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     model = net(
             learning_rate=0.0025,
             loss='mean_squared_error',
