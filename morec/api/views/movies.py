@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from api.filters import MoviesFilter
-from analytics.model.inference import get_inference, user_processing
 from api.serializers.movies import (MovieRateSerializer,
                                     MoviesDetailSerializer,
                                     MoviesFavoritsAndWatchlistSerializer,
@@ -256,18 +255,3 @@ class MoviesViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     def movies_of_the_day(self, request):
         queryset = self.get_queryset().order_by('-view_count')[:5]
         return Response(self.get_serializer(queryset, many=True).data)
-
-    @swagger_auto_schema(
-        operation_description='Выдача рекомендаций для пользователя',
-        tags=['Фильмы'],
-    )
-    @action(
-        detail=False,
-        methods=('get',),
-        permission_classes=(IsAuthenticated,),
-        filter_backends=(),
-    )
-    def personal_recomendations(self, request):
-        user = request.user
-        inference = get_inference(user_processing(user.id))
-        return Response(inference)
