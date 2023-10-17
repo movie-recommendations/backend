@@ -7,9 +7,7 @@ import pandas as pd
 from keras.models import load_model
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from morec.settings.core import BASE_DIR
-
-UTILITY_PATH = f'{BASE_DIR}/analytics/model/'
+UTILITY_PATH = f'analytics/model/'
 
 
 class AddOne(BaseEstimator, TransformerMixin):
@@ -48,12 +46,12 @@ def user_processing(test_user_slug):
     try:
         with open(f'{UTILITY_PATH}data_metrics.json', 'r') as f:
             fitted_metrics = json.load(f)
-            process1 = joblib.load(UTILITY_PATH + 'stage1preprocessor')
-            process2 = joblib.load(UTILITY_PATH + 'stage2preprocessor')
-            df_users = pd.read_csv(UTILITY_PATH + f'{cached_data_path}/{users_table}').rename(
+            process1 = joblib.load(f'{UTILITY_PATH}stage1preprocessor')
+            process2 = joblib.load(f'{UTILITY_PATH}stage2preprocessor')
+            df_users = pd.read_csv(f'{UTILITY_PATH}{cached_data_path}/{users_table}').rename(
                 columns={'id': 'user', 'fav_genres.1': 'favorited_genres'})
-            df_movies = pd.read_csv(UTILITY_PATH + f'{cached_data_path}/{movies_table}').rename(columns={'id': 'movie_id'})
-            df_ratings = pd.read_csv(UTILITY_PATH + f'{cached_data_path}/{ratings_table}').rename(
+            df_movies = pd.read_csv(f'{UTILITY_PATH}{cached_data_path}/{movies_table}').rename(columns={'id': 'movie_id'})
+            df_ratings = pd.read_csv(f'{UTILITY_PATH}{cached_data_path}/{ratings_table}').rename(
                 columns={'id': 'rate_id', 'movie': 'movie_id'})
 
     except FileNotFoundError:
@@ -202,7 +200,7 @@ def user_processing(test_user_slug):
 def get_inference(data) -> list:
     try:
         try:
-            model = load_model(UTILITY_PATH + 'best_model.h5')
+            model = load_model(f'{UTILITY_PATH}best_model.h5')
         except FileNotFoundError:
             model = load_model('best_model.h5')
 
@@ -218,7 +216,7 @@ def get_inference(data) -> list:
         return_list = one_user_results_sampler['movie_id'].tolist()
         if 0 in return_list:
             try:
-                one_best_film = pd.read_csv(UTILITY_PATH + 'cached_data/dflt_movies.csv').sample()['movie_id'].tolist()
+                one_best_film = pd.read_csv(f'{UTILITY_PATH}cached_data/dflt_movies.csv').sample()['movie_id'].tolist()
             except FileNotFoundError:
                 one_best_film = pd.read_csv('.\\cached_data\\dflt_movies.csv').sample()['movie_id'].tolist()
             finally:
@@ -229,7 +227,7 @@ def get_inference(data) -> list:
 
     except:
         try:
-            one_user_results_sampler = pd.read_csv(UTILITY_PATH + 'cached_data/dflt_movies.csv').sample(n=10)
+            one_user_results_sampler = pd.read_csv(f'{UTILITY_PATH}cached_data/dflt_movies.csv').sample(n=10)
         except FileNotFoundError:
             one_user_results_sampler = pd.read_csv('.\\cached_data\\dflt_movies.csv').sample(n=10)
 
