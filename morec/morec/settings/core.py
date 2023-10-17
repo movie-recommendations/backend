@@ -67,7 +67,7 @@ PROJECT_APPS = [
     'api',
     'users',
     'movies',
-    'analytics',
+    # 'analytics',
 ]
 
 INSTALLED_APPS += PROJECT_APPS
