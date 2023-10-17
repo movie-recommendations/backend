@@ -13,7 +13,7 @@ if dotenv_file.is_file():
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
-DEBUG = True #if os.environ.get('DEBUG') == 'True' else False
+DEBUG = True if os.environ.get('DEBUG') == 'True' else False
 
 ALLOWED_HOSTS = ['*']
 
