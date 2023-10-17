@@ -1,15 +1,17 @@
-import re
 import json
-
-
-import pandas as pd
-import numpy as np
+import re
 
 import joblib
+import numpy as np
+import pandas as pd
 from keras.models import load_model
 from sklearn.base import BaseEstimator, TransformerMixin
 
-UTILITY_PATH = 'morec/analytics/model/'
+from morec.settings.core import BASE_DIR
+
+UTILITY_PATH = f'{BASE_DIR}/analytics/model/'
+
+
 class AddOne(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
@@ -44,7 +46,7 @@ def user_processing(test_user_slug):
     ratings_table = 'RatingMovie-2023-10-14.csv'
 
     try:
-        with open(UTILITY_PATH + 'data_metrics.json', 'r') as f:
+        with open(f'{UTILITY_PATH}data_metrics.json', 'r') as f:
             fitted_metrics = json.load(f)
             process1 = joblib.load(UTILITY_PATH + 'stage1preprocessor')
             process2 = joblib.load(UTILITY_PATH + 'stage2preprocessor')
