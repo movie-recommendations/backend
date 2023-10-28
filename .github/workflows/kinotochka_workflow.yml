@@ -43,7 +43,7 @@ jobs:
         script: |
           cd morec/devops/
           sudo docker compose down
-          sudo docker image rm movrec/kinotochka_backend
+          sudo docker image rm movrec/kinotochka_backend:v1
           sudo docker compose pull backend
           rm devops.env
           touch devops.env
