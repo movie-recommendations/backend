@@ -41,10 +41,11 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
-          cd morec_project/devops/
-          sudo docker compose stop
-          sudo docker compose rm -f backend
+          cd morec/devops/
+          sudo docker compose down
+          sudo docker image rm movrec/kinotochka_backend
           sudo docker compose pull backend
+          rm devops.env
           touch devops.env
           echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> devops.env
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> devops.env
